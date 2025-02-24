@@ -30,12 +30,13 @@ const SignUp = () => {
         updateUserProfile(name);
         setUser({ ...result.user, displayName: name, photoURL: null });
         const userInfo = {
+          email: result?.user?.email,
+          userId: result?.user?.uid,
           name,
           nidNumber,
           mobileNumber,
           role,
-          email: result?.user?.email,
-          userId: result?.user?.uid,
+          balance: 0,
         };
         const { data } = await axios.post(
           `${import.meta.env.VITE_API_URL}/users`,

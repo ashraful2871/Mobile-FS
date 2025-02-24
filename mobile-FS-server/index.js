@@ -115,10 +115,38 @@ async function run() {
     });
 
     //send money
-    app.post("/send-money", async (req, res) => {
-      const { recipientPhone, amount, pin } = req.body;
-      console.log(recipientPhone, amount, pin);
-      res.send({ message: "check api" });
+    app.post("/send-money", verifyToken, async (req, res) => {
+      const { recipientPhone, amount } = req.body;
+      //   console.log(amount);
+      if (amount < 10) {
+        return res.status(400).json({ message: "Minimum amount is 10 BDT" });
+      }
+      //   console.log(req.user.email);
+      const sender = await userCollection.findOne({ email: req.user.email });
+      //   console.log(sender);
+      const recipient = await userCollection.findOne({
+        mobileNumber: recipientPhone,
+      });
+      //   console.log(recipient);
+      if (!recipient) {
+        return res.status(400).json({ message: "Recipient not found" });
+      }
+      if (sender.balance < amount) {
+        return res.status(400).json({ message: "Insufficient balance" });
+      }
+
+      // // Deduct from sender, add to recipient
+      await userCollection.updateOne(
+        { _id: sender._id },
+        { $inc: { balance: parseInt(-amount) } }
+      );
+
+      await userCollection.updateOne(
+        { _id: recipient._id },
+        { $inc: { balance: parseInt(amount) } }
+      );
+
+      res.json({ message: `Sent ${amount} BDT to ${recipientPhone}` });
     });
 
     // Send a ping to confirm a successful connection
