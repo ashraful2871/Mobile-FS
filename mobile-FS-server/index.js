@@ -17,6 +17,22 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
+//verifyToken
+const verifyToken = async (req, res, next) => {
+  const token = req.cookies?.token;
+
+  if (!token) {
+    return res.status(401).send({ message: "unauthorized access" });
+  }
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).send({ message: "unauthorized access" });
+    }
+    req.user = decoded;
+    next();
+  });
+};
+
 //mobile-fs
 // IQcdR6SUCKK5ACC9
 
@@ -36,6 +52,22 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
+    const db = client.db("MFS");
+    const userCollection = db.collection("user");
+
+    //verifyAdmin  middleware
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.user?.email;
+      const query = { email };
+      const result = await userCollection.findOne(query);
+      if (!result || result?.role !== "admin") {
+        return res
+          .status(403)
+          .send({ message: "Forbidden Access Admin Only Actions" });
+      }
+
+      next();
+    };
 
     // Generate jwt token
     app.post("/jwt", async (req, res) => {
@@ -65,6 +97,28 @@ async function run() {
       } catch (err) {
         res.status(500).send(err);
       }
+    });
+
+    //save user in db
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const query = { email: user?.email };
+      const existingUser = await userCollection.findOne(query);
+      if (existingUser) {
+        res.send({
+          message: "User Already in exist",
+          insertedId: null,
+        });
+      }
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+
+    //send money
+    app.post("/send-money", async (req, res) => {
+      const { recipientPhone, amount, pin } = req.body;
+      console.log(recipientPhone, amount, pin);
+      res.send({ message: "check api" });
     });
 
     // Send a ping to confirm a successful connection

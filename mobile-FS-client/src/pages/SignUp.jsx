@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 const SignUp = () => {
   const { signUpUser, googleLogin, updateUserProfile, setUser } = useAuth();
+  const [role, setRole] = useState("");
   const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,17 +17,31 @@ const SignUp = () => {
     const password = formData.get("pin");
     const nidNumber = formData.get("nid");
     const mobileNumber = formData.get("mobile");
-
+    // console.log({
+    //   name,
+    //   email,
+    //   password,
+    //   nidNumber,
+    //   mobileNumber,
+    //   role,
+    // });
     signUpUser(email, password)
-      .then((result) => {
+      .then(async (result) => {
         updateUserProfile(name);
         setUser({ ...result.user, displayName: name, photoURL: null });
-        // const userInfo = {
-        //   name,
-        //   email: result?.user?.email,
-        //   userId: result?.user?.uid,
-        // };
-        // axios.post(`${import.meta.env.VITE_API_URL}/user-info`, userInfo);
+        const userInfo = {
+          name,
+          nidNumber,
+          mobileNumber,
+          role,
+          email: result?.user?.email,
+          userId: result?.user?.uid,
+        };
+        const { data } = await axios.post(
+          `${import.meta.env.VITE_API_URL}/users`,
+          userInfo
+        );
+        console.log(data);
         navigate("/");
         toast.success("Sign up successfully");
       })
@@ -101,18 +117,18 @@ const SignUp = () => {
 
             {/* Account Type */}
             <div className="mb-4">
-              <label className="block text-gray-700">NID Number</label>
+              <label className="block text-gray-700">Account Type</label>
               <select
                 className="select select-bordered w-full  border-2 border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 mb-2"
                 name="category"
-                //onChange={(e) => setCategory(e.target.value)}
+                onChange={(e) => setRole(e.target.value)}
                 required
               >
                 <option value="" disabled selected>
                   Select a account type
                 </option>
-                <option value="Agent">Agent</option>
-                <option value="User">User</option>
+                <option value="agent">Agent</option>
+                <option value="user">User</option>
               </select>
             </div>
 
