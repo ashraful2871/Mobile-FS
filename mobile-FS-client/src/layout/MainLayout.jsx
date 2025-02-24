@@ -1,12 +1,13 @@
 import React from "react";
 import Home from "../pages/Home";
 import Navbar from "../components/Navbar";
+import { Outlet } from "react-router-dom";
 
 const MainLayout = () => {
   return (
-    <div>
+    <div className="max-w-7xl mx-auto space-y-5 px-5">
       <Navbar></Navbar>
-      <Home></Home>
+      <Outlet></Outlet>
     </div>
   );
 };
