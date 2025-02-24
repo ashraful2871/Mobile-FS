@@ -1,8 +1,36 @@
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
+import toast from "react-hot-toast";
 
 const SignUp = () => {
+  const { signUpUser, googleLogin, updateUserProfile, setUser } = useAuth();
+  const navigate = useNavigate();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const name = formData.get("name");
+    const email = formData.get("email");
+    const password = formData.get("pin");
+    const nidNumber = formData.get("nid");
+    const mobileNumber = formData.get("mobile");
+
+    signUpUser(email, password)
+      .then((result) => {
+        updateUserProfile(name);
+        setUser({ ...result.user, displayName: name, photoURL: null });
+        const userInfo = {
+          name,
+          email: result?.user?.email,
+          userId: result?.user?.uid,
+        };
+        // axios.post(`${import.meta.env.VITE_API_URL}/user-info`, userInfo);
+        navigate("/");
+        toast.success("Sign up successfully");
+      })
+      .catch((error) => console.log(error.message));
+  };
   return (
     <div className="flex flex-col md:flex-row h-screen">
       {/* Left Side - Animation (Hidden on Small Screens) */}
@@ -22,39 +50,85 @@ const SignUp = () => {
             Please enter your details
           </p>
 
-          <form
-          //onSubmit={handleSubmit}
-          >
+          <form onSubmit={handleSubmit}>
+            {/* name */}
             <div className="mb-4">
               <label className="block text-gray-700">Name</label>
               <input
                 type="text"
                 name="name"
+                placeholder="Enter your name"
                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500"
                 required
               />
             </div>
 
+            {/* Pin Number */}
+            <div className="mb-4">
+              <label className="block text-gray-700">Pin</label>
+              <input
+                type="password"
+                name="pin"
+                placeholder="Enter your 5  digit PIN "
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                required
+              />
+            </div>
+
+            {/*Mobile Number  */}
+            <div className="mb-4">
+              <label className="block text-gray-700">mobile Number</label>
+              <input
+                type="number"
+                name="mobile"
+                placeholder="Enter your mobile number"
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                required
+              />
+            </div>
+
+            {/* email address */}
             <div className="mb-4">
               <label className="block text-gray-700">Email address</label>
               <input
                 type="email"
                 name="email"
+                placeholder="Enter your email address"
                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500"
                 required
               />
             </div>
 
+            {/* Account Type */}
             <div className="mb-4">
-              <label className="block text-gray-700">Password</label>
+              <label className="block text-gray-700">NID Number</label>
+              <select
+                className="select select-bordered w-full  border-2 border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 mb-2"
+                name="category"
+                //onChange={(e) => setCategory(e.target.value)}
+                required
+              >
+                <option value="" disabled selected>
+                  Select a account type
+                </option>
+                <option value="Agent">Agent</option>
+                <option value="User">User</option>
+              </select>
+            </div>
+
+            {/* NID Number */}
+            <div className="mb-4">
+              <label className="block text-gray-700">NID Number</label>
               <input
-                type="password"
-                name="password"
+                type="number"
+                name="nid"
+                placeholder="Enter your NID number"
                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500"
                 required
               />
             </div>
 
+            {/* Sign Up Button */}
             <button
               type="submit"
               className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition"
