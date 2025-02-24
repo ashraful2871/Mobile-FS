@@ -9,6 +9,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { auth } from "../firebase/firebase.init";
+import axios from "axios";
 
 export const AuthContext = createContext();
 const provider = new GoogleAuthProvider();
@@ -51,9 +52,28 @@ const AuthProvider = ({ children }) => {
 
   // Observer
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      console.log("CurrentUser-->", currentUser);
       setUser(currentUser);
-      console.log(currentUser);
+      console.log(import.meta.env.VITE_API_URL);
+      if (currentUser?.email) {
+        //get jwt
+        await axios.post(
+          `${import.meta.env.VITE_API_URL}/jwt`,
+          {
+            email: currentUser?.email,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+      } else {
+        setUser(currentUser);
+        await axios.get(`${import.meta.env.VITE_API_URL}/logout`, {
+          withCredentials: true,
+        });
+      }
+
       setLoading(false);
     });
 

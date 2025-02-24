@@ -20,11 +20,11 @@ const SignUp = () => {
       .then((result) => {
         updateUserProfile(name);
         setUser({ ...result.user, displayName: name, photoURL: null });
-        const userInfo = {
-          name,
-          email: result?.user?.email,
-          userId: result?.user?.uid,
-        };
+        // const userInfo = {
+        //   name,
+        //   email: result?.user?.email,
+        //   userId: result?.user?.uid,
+        // };
         // axios.post(`${import.meta.env.VITE_API_URL}/user-info`, userInfo);
         navigate("/");
         toast.success("Sign up successfully");
