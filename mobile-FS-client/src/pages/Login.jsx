@@ -2,10 +2,10 @@ import React from "react";
 import toast from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
-import { useKindeAuth } from "@kinde-oss/kinde-auth-react"; // Import KindeAuth hook
+import useAuth from "../hooks/useAuth";
 
 const Login = () => {
-  const { signIn } = useKindeAuth(); // Destructure signIn from KindeAuth hook
+  const { signInUser } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,15 +16,9 @@ const Login = () => {
     const loginInfo = { mobileNumber, pin };
 
     try {
-      // Use Kinde's signIn method to authenticate the user
-      await signIn({
-        email: mobileNumber, // Assuming mobileNumber is used as email in Kinde
-        password: pin, // Use pin as password
-      });
-
+      await signInUser(mobileNumber, pin); // Use signInUser from AuthContext
       toast.success("Login successful!");
     } catch (error) {
-      // Display error message if signIn fails
       toast.error(error.response?.data?.message || "Login failed");
     }
   };

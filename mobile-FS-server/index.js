@@ -4,6 +4,7 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
+const authRouts = require("./routs/auth");
 const port = process.env.PORT || 5000;
 const app = express();
 
@@ -105,7 +106,7 @@ async function run() {
     //login
     app.post("/login", async (req, res) => {
       const { mobileNumber, pin } = req.body;
-      // console.log(mobileNumber, pin);
+      console.log(mobileNumber, pin);
       const user = await userCollection.findOne({ mobileNumber });
       if (!user) {
         return res.status(400).json({ message: "User Not Found" });
@@ -116,15 +117,20 @@ async function run() {
       const token = jwt.sign(
         { userId: user._id, role: user.accountType },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "1d" }
+        { expiresIn: "365d" }
       );
       res.cookie("token", token, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "Strict",
         maxAge: 24 * 60 * 60 * 1000,
       });
       res.json({ token, message: "Login successful!" });
+    });
+
+    //send user
+    app.get("/me", verifyToken, async (req, res) => {
+      res.json(req.user); // Send user info if the token is valid
     });
 
     // Generate jwt token

@@ -1,12 +1,31 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
 
 export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  console.log(user);
   const [loading, setLoading] = useState(true);
+
+  // Function to check the user session
+  const checkAuthStatus = async () => {
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/me`, {
+        withCredentials: true, // Make sure the token is sent with the request
+      });
+      setUser(res.data);
+      console.log(res.data); // Update user state if authenticated
+    } catch (error) {
+      setUser(null); // If an error occurs (invalid token), log out the user
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Check the auth status when the component mounts (like `onAuthStateChanged`)
+  useEffect(() => {
+    checkAuthStatus(); // Call the checkAuthStatus function
+  }, []); // This effect runs only once on component mount
 
   // Sign Up
   const signUpUser = async (userData) => {
@@ -34,8 +53,7 @@ const AuthProvider = ({ children }) => {
         { mobileNumber, pin },
         { withCredentials: true }
       );
-      setUser(res.data.user);
-      console.log(res);
+      setUser(res.data.user); // Store user data
       return res.data;
     } catch (error) {
       throw error.response?.data?.message || "Login failed";
@@ -51,7 +69,7 @@ const AuthProvider = ({ children }) => {
       await axios.get(`${import.meta.env.VITE_API_URL}/logout`, {
         withCredentials: true,
       });
-      setUser(null);
+      setUser(null); // Clear user state on logout
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -59,36 +77,18 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  // Check user session on page load
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/me`, {
-          withCredentials: true,
-        });
-        setUser(res.data);
-      } catch (error) {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuthStatus();
-  }, []);
-
-  const authInfo = {
-    user,
-    loading,
-    signUpUser,
-    signInUser,
-    logOut,
-    setUser,
-    setLoading,
-  };
-
   return (
-    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        signUpUser,
+        signInUser,
+        logOut,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
 };
 

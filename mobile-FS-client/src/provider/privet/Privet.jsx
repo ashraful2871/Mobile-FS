@@ -7,13 +7,13 @@ const Privet = ({ children }) => {
   const location = useLocation();
 
   if (loading) {
-    return <Loading></Loading>;
+    return <Loading />; // Show loading while checking auth status
   }
 
-  if (user && user?.email) {
-    return children;
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />; // Redirect to login if not authenticated
   }
-  return <Navigate state={location.pathname} to="/login"></Navigate>;
+
+  return children; // Allow access to the children if authenticated
 };
-
 export default Privet;

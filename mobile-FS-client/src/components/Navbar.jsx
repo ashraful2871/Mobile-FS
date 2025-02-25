@@ -2,11 +2,9 @@ import React from "react";
 import useAuth from "../hooks/useAuth";
 import { Link, NavLink } from "react-router-dom";
 import { TbCurrencyTaka } from "react-icons/tb";
-import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 const Navbar = () => {
-  // const { user, logOut } = useAuth();
-  const { login } = useKindeAuth();
+  const { user, logOut } = useAuth();
   const links = (
     <>
       <li>
@@ -27,11 +25,11 @@ const Navbar = () => {
       <li>
         <NavLink to="/cash-out">Cash Out</NavLink>
       </li>
-      {/* <li>
+      <li>
         <button className="btn btn-sm" onClick={logOut}>
           Logout
         </button>
-      </li> */}
+      </li>
     </>
   );
   return (
