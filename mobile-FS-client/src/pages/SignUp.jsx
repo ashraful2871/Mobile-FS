@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 
 const SignUp = () => {
-  const { signUpUser, googleLogin, updateUserProfile, setUser } = useAuth();
+  const { signUpUser } = useAuth();
   const [role, setRole] = useState("");
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
@@ -34,14 +34,16 @@ const SignUp = () => {
       pin,
     };
     try {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/sign-up`,
-        formInfo
-      );
+      // const { data } = await axios.post(
+      //   `${import.meta.env.VITE_API_URL}/sign-up`,
+      //   formInfo
+      // );
       // console.log(data);
+      signUpUser(formInfo);
       toast.success("Registration successful!");
     } catch (error) {
-      toast.error(error.response.data.message);
+      // toast.error(error.response?.data?.message);
+      console.log(error);
     }
 
     // signUpUser(email, password)

@@ -5,7 +5,7 @@ const Home = () => {
   return (
     <div>
       <h2>i am home</h2>
-      <SendMoney></SendMoney>
+      {/* <SendMoney></SendMoney> */}
     </div>
   );
 };

@@ -1,37 +1,38 @@
-import axios from "axios";
 import React from "react";
 import toast from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react"; // Import KindeAuth hook
 
 const Login = () => {
+  const { signIn } = useKindeAuth(); // Destructure signIn from KindeAuth hook
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const mobileNumber = formData.get("mobile");
     const pin = formData.get("pin");
-    const loginInfo = {
-      mobileNumber: mobileNumber,
-      pin: pin,
-    };
-    console.log(loginInfo);
-    console.log(import.meta.env.VITE_API_URL);
+
+    const loginInfo = { mobileNumber, pin };
+
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/login`, loginInfo, {
-        withCredentials: true,
+      // Use Kinde's signIn method to authenticate the user
+      await signIn({
+        email: mobileNumber, // Assuming mobileNumber is used as email in Kinde
+        password: pin, // Use pin as password
       });
+
       toast.success("Login successful!");
     } catch (error) {
-      // toast.error(error.response?.data?.message || "Login failed");
-      console.log(error);
+      // Display error message if signIn fails
+      toast.error(error.response?.data?.message || "Login failed");
     }
   };
+
   return (
     <div className="flex flex-col md:flex-row h-screen">
       <div className="hidden md:flex md:w-1/2 bg-purple-50 items-center justify-center p-6">
-        <div className="w-full max-w-sm">
-          {/* <Lottie animationData={login} loop={true} /> */}
-        </div>
+        <div className="w-full max-w-sm">{/* Animation can go here */}</div>
       </div>
 
       <div className="w-full md:w-1/2 flex items-center justify-center p-6">
@@ -80,7 +81,7 @@ const Login = () => {
           </div>
 
           <button
-            //onClick={handleGoogleSignUP}
+            // onClick={handleGoogleSignUp}
             className="w-full flex items-center justify-center border py-3 rounded-lg hover:bg-gray-100 transition"
           >
             <FcGoogle className="mr-2 text-2xl" /> Sign in with Google

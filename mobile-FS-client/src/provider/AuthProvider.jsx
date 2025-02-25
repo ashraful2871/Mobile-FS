@@ -5,6 +5,7 @@ export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  console.log(user);
   const [loading, setLoading] = useState(true);
 
   // Sign Up
@@ -34,6 +35,7 @@ const AuthProvider = ({ children }) => {
         { withCredentials: true }
       );
       setUser(res.data.user);
+      console.log(res);
       return res.data;
     } catch (error) {
       throw error.response?.data?.message || "Login failed";

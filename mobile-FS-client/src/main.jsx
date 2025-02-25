@@ -8,6 +8,9 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import AuthProvider from "./provider/AuthProvider";
 import { Toaster } from "react-hot-toast";
+import SendMoney from "./transection/SendMoney";
+import CashOut from "./transection/CashOut";
+import Privet from "./provider/privet/Privet";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -24,6 +27,18 @@ const router = createBrowserRouter([
       {
         path: "/sign-up",
         element: <SignUp></SignUp>,
+      },
+      {
+        path: "/send-money",
+        element: (
+          <Privet>
+            <SendMoney></SendMoney>
+          </Privet>
+        ),
+      },
+      {
+        path: "/cash-out",
+        element: <CashOut></CashOut>,
       },
     ],
   },
