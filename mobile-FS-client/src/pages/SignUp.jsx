@@ -9,12 +9,12 @@ const SignUp = () => {
   const { signUpUser, googleLogin, updateUserProfile, setUser } = useAuth();
   const [role, setRole] = useState("");
   const navigate = useNavigate();
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const name = formData.get("name");
     const email = formData.get("email");
-    const password = formData.get("pin");
+    const pin = formData.get("pin");
     const nidNumber = formData.get("nid");
     const mobileNumber = formData.get("mobile");
     // console.log({
@@ -25,28 +25,39 @@ const SignUp = () => {
     //   mobileNumber,
     //   role,
     // });
-    signUpUser(email, password)
-      .then(async (result) => {
-        updateUserProfile(name);
-        setUser({ ...result.user, displayName: name, photoURL: null });
-        const userInfo = {
-          email: result?.user?.email,
-          userId: result?.user?.uid,
-          name,
-          nidNumber,
-          mobileNumber,
-          role,
-          balance: 0,
-        };
-        const { data } = await axios.post(
-          `${import.meta.env.VITE_API_URL}/users`,
-          userInfo
-        );
-        console.log(data);
-        navigate("/");
-        toast.success("Sign up successfully");
-      })
-      .catch((error) => console.log(error.message));
+    const formInfo = {
+      email,
+      name,
+      nidNumber,
+      mobileNumber,
+      role,
+      pin,
+    };
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/sign-up`,
+        formInfo
+      );
+      // console.log(data);
+      toast.success("Registration successful!");
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+
+    // signUpUser(email, password)
+    //   .then(async (result) => {
+    //     updateUserProfile(name);
+    //     setUser({ ...result.user, displayName: name, photoURL: null });
+
+    //     const { data } = await axios.post(
+    //       `${import.meta.env.VITE_API_URL}/users`,
+    //       userInfo
+    //     );
+    //     console.log(data);
+    //     navigate("/");
+    //     toast.success("Sign up successfully");
+    //   })
+    //   .catch((error) => console.log(error.message));
   };
   return (
     <div className="flex flex-col md:flex-row h-screen">

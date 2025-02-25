@@ -1,82 +1,78 @@
 import React, { createContext, useEffect, useState } from "react";
-import {
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  updateProfile,
-  signOut,
-} from "firebase/auth";
-import { auth } from "../firebase/firebase.init";
 import axios from "axios";
 
 export const AuthContext = createContext();
-const provider = new GoogleAuthProvider();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Sign Up
-  const signUpUser = (email, password) => {
+  const signUpUser = async (userData) => {
     setLoading(true);
-    return createUserWithEmailAndPassword(auth, email, password);
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/sign-up`,
+        userData,
+        { withCredentials: true }
+      );
+      return res.data;
+    } catch (error) {
+      throw error.response?.data?.message || "Signup failed";
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Sign In
-  const signInUser = (email, password) => {
+  const signInUser = async (mobileNumber, pin) => {
     setLoading(true);
-    return signInWithEmailAndPassword(auth, email, password);
-  };
-
-  // Google Login
-  const googleLogin = () => {
-    setLoading(true);
-    return signInWithPopup(auth, provider);
-  };
-
-  // Update Profile
-  const updateUserProfile = (name, photo) => {
-    return updateProfile(auth.currentUser, {
-      displayName: name,
-      photoURL: photo,
-    });
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/login`,
+        { mobileNumber, pin },
+        { withCredentials: true }
+      );
+      setUser(res.data.user);
+      return res.data;
+    } catch (error) {
+      throw error.response?.data?.message || "Login failed";
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Logout
-  const logOut = () => {
+  const logOut = async () => {
     setLoading(true);
-    return signOut(auth);
+    try {
+      await axios.get(`${import.meta.env.VITE_API_URL}/logout`, {
+        withCredentials: true,
+      });
+      setUser(null);
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Observer
+  // Check user session on page load
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      console.log("CurrentUser-->", currentUser);
-      setUser(currentUser);
-      if (currentUser?.email) {
-        //get jwt
-        await axios.post(
-          `${import.meta.env.VITE_API_URL}/jwt`,
-          {
-            email: currentUser?.email,
-          },
-          {
-            withCredentials: true,
-          }
-        );
-      } else {
-        setUser(currentUser);
-        await axios.get(`${import.meta.env.VITE_API_URL}/logout`, {
+    const checkAuthStatus = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/me`, {
           withCredentials: true,
         });
+        setUser(res.data);
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    checkAuthStatus();
   }, []);
 
   const authInfo = {
@@ -84,8 +80,6 @@ const AuthProvider = ({ children }) => {
     loading,
     signUpUser,
     signInUser,
-    googleLogin,
-    updateUserProfile,
     logOut,
     setUser,
     setLoading,

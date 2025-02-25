@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const bcrypt = require("bcryptjs");
 const port = process.env.PORT || 5000;
 const app = express();
 
@@ -68,6 +69,62 @@ async function run() {
 
       next();
     };
+
+    //register
+    app.post("/sign-up", async (req, res) => {
+      const { email, name, nidNumber, mobileNumber, role, pin } = req.body;
+
+      const existingUser = await userCollection.findOne({
+        $or: [{ mobileNumber }, { email }, { nidNumber }],
+      });
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists!" });
+      }
+
+      //has pin
+      const hasPin = await bcrypt.hash(pin, 10);
+
+      //set initial balance
+      const initialBalance = role === "agent" ? 100000 : 40;
+
+      const newUser = {
+        email,
+        name,
+        nidNumber,
+        mobileNumber,
+        role,
+        pin: hasPin,
+        balance: initialBalance,
+        isApproved: role === "agent" ? false : true,
+      };
+      await userCollection.insertOne(newUser);
+      res.status(201).json({ message: "Registration successful!" });
+    });
+
+    //login
+    app.post("/login", async (req, res) => {
+      const { mobileNumber, pin } = req.body;
+      console.log(mobileNumber, pin);
+      const user = await userCollection.findOne({ mobileNumber });
+      if (!user) {
+        return res.status(400).json({ message: "User Not Found" });
+      }
+      // PIN validate
+      const isMatch = await bcrypt.compare(pin, user.pin);
+      if (!isMatch) return res.status(400).json({ message: "Invalid PIN!" });
+      const token = jwt.sign(
+        { userId: user._id, role: user.accountType },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "1d" }
+      );
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+      res.json({ token, message: "Login successful!" });
+    });
 
     // Generate jwt token
     app.post("/jwt", async (req, res) => {

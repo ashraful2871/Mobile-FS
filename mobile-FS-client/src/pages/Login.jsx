@@ -1,8 +1,31 @@
+import axios from "axios";
 import React from "react";
+import toast from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 
 const Login = () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const mobileNumber = formData.get("mobile");
+    const pin = formData.get("pin");
+    const loginInfo = {
+      mobileNumber: mobileNumber,
+      pin: pin,
+    };
+    console.log(loginInfo);
+    console.log(import.meta.env.VITE_API_URL);
+    try {
+      await axios.post(`${import.meta.env.VITE_API_URL}/login`, loginInfo, {
+        withCredentials: true,
+      });
+      toast.success("Login successful!");
+    } catch (error) {
+      // toast.error(error.response?.data?.message || "Login failed");
+      console.log(error);
+    }
+  };
   return (
     <div className="flex flex-col md:flex-row h-screen">
       <div className="hidden md:flex md:w-1/2 bg-purple-50 items-center justify-center p-6">
@@ -20,38 +43,28 @@ const Login = () => {
             Please enter your details
           </p>
 
-          <form
-          //onSubmit={handleSubmit}
-          >
+          <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block text-gray-700">Email address</label>
+              <label className="block text-gray-700">Phone Number</label>
               <input
-                type="email"
-                name="email"
+                type="number"
+                name="mobile"
+                placeholder="Enter your number"
                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500"
                 required
               />
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700">Password</label>
+              <label className="block text-gray-700">Pin</label>
               <input
                 type="password"
-                name="password"
+                name="pin"
+                placeholder="Enter your pin"
                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500"
                 required
               />
             </div>
-
-            <div className="flex items-center justify-between mb-4 text-sm">
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" /> Remember me
-              </label>
-              <a href="#" className="text-purple-600 hover:underline">
-                Forgot password?
-              </a>
-            </div>
-
             <button
               type="submit"
               className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition"
