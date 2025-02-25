@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Loading from "../../components/Loading";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
@@ -6,26 +6,22 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
 const AllUsers = () => {
+  const [search, setSearch] = useState("");
+  console.log(search);
   const axiosSecure = useAxiosSecure();
   const { data: users = [], isLoading } = useQuery({
-    queryKey: ["all-users"],
+    queryKey: ["all-users", search],
     queryFn: async () => {
-      const { data } = await axiosSecure.get(
-        `${import.meta.env.VITE_API_URL}/all-users`
-      );
+      const { data } = await axiosSecure.get(`/all-users?search=${search}`);
       return data;
     },
   });
-  console.log(users);
-  if (isLoading) {
-    return <Loading></Loading>;
-  }
 
   return (
     <div>
       <input
         type="number"
-        //onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => setSearch(e.target.value)}
         placeholder="Search by numbers"
         className="input input-bordered w-full max-w-xs"
       />

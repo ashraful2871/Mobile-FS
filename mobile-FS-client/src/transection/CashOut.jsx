@@ -20,10 +20,7 @@ const CashOut = () => {
     const cashOutInfo = { agentPhone, amount, pin };
 
     try {
-      const { data } = await axiosSecure.post(
-        `${import.meta.env.VITE_API_URL}/cash-out`,
-        cashOutInfo
-      );
+      const { data } = await axiosSecure.post(`/cash-out`, cashOutInfo);
 
       setMessage(`✅ ${data.message}`);
     } catch (error) {

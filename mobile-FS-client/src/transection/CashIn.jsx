@@ -20,10 +20,7 @@ const CashIn = () => {
     const cashInInfo = { userPhone, amount, agentPin };
 
     try {
-      const { data } = await axiosSecure.post(
-        `${import.meta.env.VITE_API_URL}/cash-in`,
-        cashInInfo
-      );
+      const { data } = await axiosSecure.post(`/cash-in`, cashInInfo);
 
       setMessage(`✅ ${data.message}`);
     } catch (error) {

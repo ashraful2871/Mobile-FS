@@ -12,9 +12,7 @@ const ViewAllUserTransaction = () => {
   const { data: transactions = [], isLoading } = useQuery({
     queryKey: ["view-transaction", id],
     queryFn: async () => {
-      const { data } = await axiosSecure.get(
-        `${import.meta.env.VITE_API_URL}/view-transaction/${id}`
-      );
+      const { data } = await axiosSecure.get(`/view-transaction/${id}`);
       return data;
     },
   });

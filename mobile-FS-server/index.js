@@ -414,12 +414,34 @@ async function run() {
 
     //get all users //verify admin
     app.get("/all-users", verifyToken, async (req, res) => {
-      const result = await userCollection.find().toArray();
-      res.send(result);
+      try {
+        const { search } = req.query;
+        console.log(search);
+
+        // Initialize the query object
+        const query = {};
+
+        // Add case-insensitive search for mobileNumber if search is provided
+        if (search) {
+          query.mobileNumber = { $regex: search, $options: "i" }; // Case-insensitive search on mobileNumber
+        }
+
+        // Find users that match the search query
+        const result = await userCollection.find(query).toArray();
+
+        // Return the matching users as a response
+        res.send(result);
+      } catch (error) {
+        console.error(error);
+        res
+          .status(500)
+          .send({ error: "An error occurred while searching users." });
+      }
     });
 
     app.get("/view-transaction/:id", verifyToken, async (req, res) => {
       const { id } = req.params;
+
       const query = { userId: new ObjectId(id) };
       const result = await transactionCollection.find(query).toArray();
       res.send(result);

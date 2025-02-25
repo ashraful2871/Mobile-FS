@@ -11,13 +11,10 @@ const SendMoney = () => {
   const handleSendMoney = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axiosSecure.post(
-        `${import.meta.env.VITE_API_URL}/send-money`,
-        {
-          recipientPhone,
-          amount,
-        }
-      );
+      const { data } = await axiosSecure.post(`/send-money`, {
+        recipientPhone,
+        amount,
+      });
       toast.success("Money sent successfully!");
       // toast.success(data?.message);
     } catch (error) {
