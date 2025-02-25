@@ -338,6 +338,80 @@ async function run() {
       });
     });
 
+    // cash-in // agent route and agentVerify
+    app.post("/cash-in", verifyToken, async (req, res) => {
+      const { userPhone, amount, agentPin } = req.body;
+      const { userId } = req.user; // The authenticated agent
+
+      // Minimum cash-in amount check (optional, can adjust as needed)
+      if (amount < 100) {
+        return res
+          .status(400)
+          .json({ message: "Minimum cash-in amount is 100 BDT" });
+      }
+
+      // Find the user by phone number
+      const user = await userCollection.findOne({ mobileNumber: userPhone });
+      if (!user) {
+        return res.status(400).json({ message: "User not found" });
+      }
+
+      // Find the agent by userId (the agent is the currently authenticated user)
+      const agent = await userCollection.findOne({
+        _id: new ObjectId(userId),
+        role: "agent",
+        isApproved: true,
+      });
+
+      if (!agent) {
+        return res
+          .status(400)
+          .json({ message: "Agent not found or not approved" });
+      }
+
+      // Validate the agent's PIN
+      const isPinValid = await bcrypt.compare(agentPin, agent.pin);
+      if (!isPinValid) {
+        return res.status(400).json({ message: "Invalid Agent PIN!" });
+      }
+
+      // Update the user's balance
+      await userCollection.updateOne(
+        { _id: user._id },
+        { $inc: { balance: amount } }
+      );
+
+      // Update the total system balance
+      const systemStats = await totalBalanceCollection.findOne({
+        _id: "totalMoney",
+      });
+      const newTotalBalance = systemStats.totalBalance + amount;
+      await totalBalanceCollection.updateOne(
+        { _id: "totalMoney" },
+        { $set: { totalBalance: newTotalBalance } }
+      );
+
+      // Insert the transaction into the transactionCollection
+      const transaction = {
+        type: "Cash-In",
+        userId: user._id,
+        userName: user.name,
+        userPhone: user.mobileNumber,
+        agentId: agent._id,
+        agentName: agent.name,
+        agentPhone: agent.mobileNumber,
+        amount: amount,
+        timestamp: new Date(),
+      };
+
+      await transactionCollection.insertOne(transaction);
+
+      // Send a notification or response
+      res.json({
+        message: `Cash-in successful! Amount: ${amount} BDT has been credited to the user's account.`,
+      });
+    });
+
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
     console.log(

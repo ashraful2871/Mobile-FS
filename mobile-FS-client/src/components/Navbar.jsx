@@ -26,6 +26,9 @@ const Navbar = () => {
         <NavLink to="/cash-out">Cash Out</NavLink>
       </li>
       <li>
+        <NavLink to="/cash-in">Cash In</NavLink>
+      </li>
+      <li>
         <button className="btn btn-sm" onClick={logOut}>
           Logout
         </button>

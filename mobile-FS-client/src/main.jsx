@@ -11,6 +11,7 @@ import { Toaster } from "react-hot-toast";
 import SendMoney from "./transection/SendMoney";
 import CashOut from "./transection/CashOut";
 import Privet from "./provider/privet/Privet";
+import CashIn from "./transection/CashIn";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -41,6 +42,14 @@ const router = createBrowserRouter([
         element: (
           <Privet>
             <CashOut></CashOut>
+          </Privet>
+        ),
+      },
+      {
+        path: "/cash-in",
+        element: (
+          <Privet>
+            <CashIn></CashIn>
           </Privet>
         ),
       },
