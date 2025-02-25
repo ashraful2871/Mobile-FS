@@ -412,9 +412,16 @@ async function run() {
       });
     });
 
-    //get all users
+    //get all users //verify admin
     app.get("/all-users", verifyToken, async (req, res) => {
       const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get("/view-transaction/:id", verifyToken, async (req, res) => {
+      const { id } = req.params;
+      const query = { userId: new ObjectId(id) };
+      const result = await transactionCollection.find(query).toArray();
       res.send(result);
     });
 
