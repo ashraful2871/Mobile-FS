@@ -29,6 +29,9 @@ const Navbar = () => {
         <NavLink to="/cash-in">Cash In</NavLink>
       </li>
       <li>
+        <NavLink to="/dashboard">Dashboard</NavLink>
+      </li>
+      <li>
         <button className="btn btn-sm" onClick={logOut}>
           Logout
         </button>
@@ -38,11 +41,13 @@ const Navbar = () => {
   return (
     <div className="navbar bg-base-100">
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl">Akash-MFS</a>
+        <Link to="/" className=" text-3xl font-extrabold">
+          Akash-MFS
+        </Link>
       </div>
       <div className="flex-none gap-2">
         {/* show balance here */}
-        <div className="flex items-center gap-[2px] text-xl">
+        <div className="flex items-center gap-[2px] text-2xl font-semibold">
           <span>
             <TbCurrencyTaka />
           </span>

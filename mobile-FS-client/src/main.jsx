@@ -12,6 +12,10 @@ import SendMoney from "./transection/SendMoney";
 import CashOut from "./transection/CashOut";
 import Privet from "./provider/privet/Privet";
 import CashIn from "./transection/CashIn";
+import DashBoard from "./layout/DashBoard";
+import AllUsers from "./dashboard/user/AllUsers";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ViewAllUserTransaction from "./dashboard/user/ViewAllUserTransaction";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -55,12 +59,33 @@ const router = createBrowserRouter([
       },
     ],
   },
+
+  //dashboard
+
+  {
+    path: "/dashboard",
+    element: <DashBoard></DashBoard>,
+    children: [
+      {
+        path: "all-users",
+        element: <AllUsers></AllUsers>,
+      },
+      {
+        path: "view-user-transaction/:id",
+        element: <ViewAllUserTransaction></ViewAllUserTransaction>,
+      },
+    ],
+  },
 ]);
+
+const queryClient = new QueryClient();
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-      <Toaster></Toaster>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RouterProvider router={router} />
+        <Toaster></Toaster>
+      </AuthProvider>
+    </QueryClientProvider>
   </StrictMode>
 );
