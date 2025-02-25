@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import useAxiosSecure from "../hooks/useAxiosSecure";
+import toast from "react-hot-toast";
 
 const SendMoney = () => {
   const [recipientPhone, setRecipientPhone] = useState("");
@@ -10,13 +11,17 @@ const SendMoney = () => {
   const handleSendMoney = async (e) => {
     e.preventDefault();
     try {
-      await axiosSecure.post(`${import.meta.env.VITE_API_URL}/send-money`, {
-        recipientPhone,
-        amount,
-      });
-      alert("Money sent successfully!");
+      const { data } = await axiosSecure.post(
+        `${import.meta.env.VITE_API_URL}/send-money`,
+        {
+          recipientPhone,
+          amount,
+        }
+      );
+      toast.success("Money sent successfully!");
+      // toast.success(data?.message);
     } catch (error) {
-      alert(error.response?.data?.message || "Transaction failed");
+      toast.error(error.response?.data?.message || "Transaction failed");
     }
   };
 

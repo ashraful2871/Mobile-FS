@@ -37,7 +37,7 @@ const verifyToken = async (req, res, next) => {
 //mobile-fs
 // IQcdR6SUCKK5ACC9
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.USER_DB}:${process.env.USER_PASS}@cluster0.jq7qb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -55,6 +55,7 @@ async function run() {
     // await client.connect();
     const db = client.db("MFS");
     const userCollection = db.collection("user");
+    const totalBalanceCollection = db.collection("total-balance");
 
     //verifyAdmin  middleware
     const verifyAdmin = async (req, res, next) => {
@@ -104,7 +105,7 @@ async function run() {
     //login
     app.post("/login", async (req, res) => {
       const { mobileNumber, pin } = req.body;
-      console.log(mobileNumber, pin);
+      // console.log(mobileNumber, pin);
       const user = await userCollection.findOne({ mobileNumber });
       if (!user) {
         return res.status(400).json({ message: "User Not Found" });
@@ -174,17 +175,21 @@ async function run() {
     //send money
     app.post("/send-money", verifyToken, async (req, res) => {
       const { recipientPhone, amount } = req.body;
-      //   console.log(amount);
-      if (amount < 10) {
-        return res.status(400).json({ message: "Minimum amount is 10 BDT" });
+      const { userId } = req.user;
+
+      // Minimum amount check
+      if (amount < 50) {
+        return res.status(400).json({ message: "Minimum amount is 50 BDT" });
       }
-      //   console.log(req.user.email);
-      const sender = await userCollection.findOne({ email: req.user.email });
-      //   console.log(sender);
+
+      // Find sender and recipient
+      const sender = await userCollection.findOne({
+        _id: new ObjectId(userId),
+      });
       const recipient = await userCollection.findOne({
         mobileNumber: recipientPhone,
       });
-      //   console.log(recipient);
+
       if (!recipient) {
         return res.status(400).json({ message: "Recipient not found" });
       }
@@ -192,18 +197,40 @@ async function run() {
         return res.status(400).json({ message: "Insufficient balance" });
       }
 
-      // // Deduct from sender, add to recipient
+      // Calculate the fee (5 BDT if amount > 100)
+      const fee = amount > 100 ? 5 : 0;
+
+      // Deduct from sender, add to recipient
       await userCollection.updateOne(
         { _id: sender._id },
-        { $inc: { balance: parseInt(-amount) } }
+        { $inc: { balance: -amount - fee } }
       );
-
       await userCollection.updateOne(
         { _id: recipient._id },
-        { $inc: { balance: parseInt(amount) } }
+        { $inc: { balance: amount } }
       );
 
-      res.json({ message: `Sent ${amount} BDT to ${recipientPhone}` });
+      // Add fee to admin (assuming admin has a specific userId)
+      const admin = await userCollection.findOne({ role: "admin" });
+      await userCollection.updateOne(
+        { _id: admin._id },
+        { $inc: { balance: fee } }
+      );
+
+      // Update total system balance
+      const systemStats = await totalBalanceCollection.findOne({
+        _id: "totalMoney",
+      });
+      const newTotalBalance = systemStats.totalBalance + amount + fee;
+
+      await totalBalanceCollection.updateOne(
+        { _id: "totalMoney" },
+        { $set: { totalBalance: newTotalBalance } }
+      );
+
+      res.json({
+        message: `Sent ${amount} BDT to ${recipientPhone}, Fee: ${fee} BDT`,
+      });
     });
 
     // Send a ping to confirm a successful connection
