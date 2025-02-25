@@ -7,16 +7,16 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Function to check the user session
+  // check the user session
   const checkAuthStatus = async () => {
     try {
       const res = await axios.get(`${import.meta.env.VITE_API_URL}/me`, {
-        withCredentials: true, // Make sure the token is sent with the request
+        withCredentials: true,
       });
       setUser(res.data);
-      console.log(res.data); // Update user state if authenticated
+      console.log(res.data);
     } catch (error) {
-      setUser(null); // If an error occurs (invalid token), log out the user
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -24,8 +24,8 @@ const AuthProvider = ({ children }) => {
 
   // Check the auth status when the component mounts (like `onAuthStateChanged`)
   useEffect(() => {
-    checkAuthStatus(); // Call the checkAuthStatus function
-  }, []); // This effect runs only once on component mount
+    checkAuthStatus();
+  }, []);
 
   // Sign Up
   const signUpUser = async (userData) => {
@@ -53,7 +53,7 @@ const AuthProvider = ({ children }) => {
         { mobileNumber, pin },
         { withCredentials: true }
       );
-      setUser(res.data.user); // Store user data
+      setUser(res.data.user);
       return res.data;
     } catch (error) {
       throw error.response?.data?.message || "Login failed";
@@ -69,7 +69,7 @@ const AuthProvider = ({ children }) => {
       await axios.get(`${import.meta.env.VITE_API_URL}/logout`, {
         withCredentials: true,
       });
-      setUser(null); // Clear user state on logout
+      setUser(null);
     } catch (error) {
       console.error("Logout error:", error);
     } finally {

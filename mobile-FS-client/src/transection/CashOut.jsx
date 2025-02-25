@@ -1,22 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
+import useAxiosSecure from "../hooks/useAxiosSecure";
 
 const CashOut = () => {
-  const handleCashOut = (e) => {
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const axiosSecure = useAxiosSecure();
+
+  const handleCashOut = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
     const formData = new FormData(e.target);
-    const agentNumber = formData.get("agent-number");
-    const amount = formData.get("amount");
+    const agentPhone = formData.get("agent-number");
+    const amount = parseFloat(formData.get("amount"));
     const pin = formData.get("pin");
-    const cashOutInfo = {
-      agentNumber,
-      amount,
-      pin,
-    };
-    console.log(cashOutInfo);
+
+    const cashOutInfo = { agentPhone, amount, pin };
+
+    try {
+      const { data } = await axiosSecure.post(
+        `${import.meta.env.VITE_API_URL}/cash-out`,
+        cashOutInfo
+      );
+
+      setMessage(`✅ ${data.message}`);
+    } catch (error) {
+      setMessage(
+        `❌ ${error.response?.data?.message || "Something went wrong"}`
+      );
+    } finally {
+      setLoading(false);
+    }
   };
+
   return (
     <>
-      <h2 className="text-center text-3xl font-bold  text-purple-700">
+      <h2 className="text-center text-3xl font-bold text-purple-700">
         Cash Out Money
       </h2>
       <div className="flex justify-center">
@@ -60,17 +81,29 @@ const CashOut = () => {
             </div>
 
             <div className="form-control mt-6">
-              {/* {loading ? (
-                <ButtonLoading width="w-full"></ButtonLoading>
-              ) : (
-                <button className="btn font-semibold text-base bg-purple-600 hover:bg-purple-700 text-white">
-                  Add Task
-                </button>
-              )} */}
-              <button className="btn font-semibold text-base bg-purple-600 hover:bg-purple-700 text-white">
-                Cash Out
+              <button
+                type="submit"
+                className={`btn font-semibold text-base text-white ${
+                  loading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-purple-600 hover:bg-purple-700"
+                }`}
+                disabled={loading}
+              >
+                {loading ? "Processing..." : "Cash Out"}
               </button>
             </div>
+
+            {/* Display API response message */}
+            {message && (
+              <p
+                className={`mt-4 text-center font-semibold ${
+                  message.includes("✅") ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {message}
+              </p>
+            )}
           </form>
         </div>
       </div>

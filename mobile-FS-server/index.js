@@ -57,6 +57,7 @@ async function run() {
     const db = client.db("MFS");
     const userCollection = db.collection("user");
     const totalBalanceCollection = db.collection("total-balance");
+    const transactionCollection = db.collection("transaction");
 
     //verifyAdmin  middleware
     const verifyAdmin = async (req, res, next) => {
@@ -236,6 +237,104 @@ async function run() {
 
       res.json({
         message: `Sent ${amount} BDT to ${recipientPhone}, Fee: ${fee} BDT`,
+      });
+    });
+
+    // cash out
+    app.post("/cash-out", verifyToken, async (req, res) => {
+      const { agentPhone, amount, pin } = req.body;
+      const { userId } = req.user;
+
+      // Minimum cash-out amount check
+      if (amount < 100) {
+        return res
+          .status(400)
+          .json({ message: "Minimum cash-out amount is 100 BDT" });
+      }
+
+      // Find user and agent
+      const user = await userCollection.findOne({ _id: new ObjectId(userId) });
+      const agent = await userCollection.findOne({
+        mobileNumber: agentPhone,
+        role: "agent",
+        isApproved: true,
+      });
+
+      if (!user) {
+        return res.status(400).json({ message: "User not found" });
+      }
+      if (!agent) {
+        return res
+          .status(400)
+          .json({ message: "Agent not found or not approved" });
+      }
+
+      // PIN validation
+      const isPinValid = await bcrypt.compare(pin, user.pin);
+      if (!isPinValid) {
+        return res.status(400).json({ message: "Invalid PIN!" });
+      }
+
+      // Check user balance
+      const fee = amount * 0.015; // 1.5% fee
+      const totalDeduction = amount + fee;
+      if (user.balance < totalDeduction) {
+        return res.status(400).json({ message: "Insufficient balance" });
+      }
+
+      // Calculate agent & admin income
+      const agentIncome = amount * 0.01; // 1% to agent
+      const adminIncome = amount * 0.005; // 0.5% to admin
+
+      // Deduct from user
+      await userCollection.updateOne(
+        { _id: user._id },
+        { $inc: { balance: -totalDeduction } }
+      );
+
+      // Add amount to agent
+      await userCollection.updateOne(
+        { _id: agent._id },
+        { $inc: { balance: amount + agentIncome } }
+      );
+
+      // Update admin income
+      const admin = await userCollection.findOne({ role: "admin" });
+      await userCollection.updateOne(
+        { _id: admin._id },
+        { $inc: { balance: adminIncome } }
+      );
+
+      // Update total system balance
+      const systemStats = await totalBalanceCollection.findOne({
+        _id: "totalMoney",
+      });
+      const newTotalBalance = systemStats.totalBalance - amount;
+      await totalBalanceCollection.updateOne(
+        { _id: "totalMoney" },
+        { $set: { totalBalance: newTotalBalance } }
+      );
+
+      // Insert transaction into transactionCollection
+      const transaction = {
+        type: "Cash-Out",
+        userId: user._id,
+        userName: user.name,
+        userPhone: user.mobileNumber,
+        agentId: agent._id,
+        agentName: agent.name,
+        agentPhone: agent.mobileNumber,
+        amount: amount,
+        fee: fee,
+        agentIncome: agentIncome,
+        adminIncome: adminIncome,
+        timestamp: new Date(),
+      };
+
+      await transactionCollection.insertOne(transaction);
+
+      res.json({
+        message: `Cash-out successful! Withdrawn: ${amount} BDT, Fee: ${fee} BDT`,
       });
     });
 

@@ -38,7 +38,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/cash-out",
-        element: <CashOut></CashOut>,
+        element: (
+          <Privet>
+            <CashOut></CashOut>
+          </Privet>
+        ),
       },
     ],
   },
