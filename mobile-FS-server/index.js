@@ -654,6 +654,21 @@ async function run() {
       }
     );
 
+    //add money
+    app.patch("/add-money/:id", verifyToken, verifyAdmin, async (req, res) => {
+      const { id } = req.params;
+      const { amount } = req.body;
+      console.log(amount);
+      const query = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $inc: {
+          balance: amount,
+        },
+      };
+      const result = await userCollection.updateOne(query, updatedDoc);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
     console.log(

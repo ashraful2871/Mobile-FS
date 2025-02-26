@@ -71,12 +71,6 @@ const AllUsers = () => {
                           View Transaction
                         </button>
                       </Link>
-                      <button
-                        //onClick={() => handleMakeTutor(user)}
-                        className="btn btn-neutral btn-sm"
-                      >
-                        Make Tutor
-                      </button>
                     </th>
                   </tr>
                 ))}
