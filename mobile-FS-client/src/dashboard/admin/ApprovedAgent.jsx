@@ -2,6 +2,7 @@ import React from "react";
 import { FaEdit, FaTrashRestoreAlt } from "react-icons/fa";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import { MdOutlineBlock } from "react-icons/md";
 
 const ApprovedAgent = ({ approvedAgent, refetch }) => {
   const axiosSecure = useAxiosSecure();
@@ -54,7 +55,10 @@ const ApprovedAgent = ({ approvedAgent, refetch }) => {
             </thead>
             <tbody className="border-2 w-full ">
               {approvedAgent.map((agent, idx) => (
-                <tr className="border border-gray-300 text-xs md:text-base">
+                <tr
+                  key={idx}
+                  className="border border-gray-300 text-xs md:text-base"
+                >
                   <th className="border border-gray-300">{idx + 1}</th>
                   <td className="text-center border border-gray-300">
                     {agent.name}
@@ -77,7 +81,7 @@ const ApprovedAgent = ({ approvedAgent, refetch }) => {
                         onClick={() => handleBlock(agent._id)}
                         className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-all flex gap-1 items-center shadow-md disabled:bg-gray-500 disabled:cursor-not-allowed"
                       >
-                        <FaTrashRestoreAlt /> Block
+                        <MdOutlineBlock className="font-bold text-lg" /> Block
                       </button>
                     </div>
                   </th>

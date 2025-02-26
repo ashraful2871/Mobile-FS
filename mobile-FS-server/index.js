@@ -618,6 +618,24 @@ async function run() {
         res.send(result);
       }
     );
+
+    //unblock agent
+    app.patch(
+      "/unblock-agent/:id",
+      verifyToken,
+      verifyAdmin,
+      async (req, res) => {
+        const { id } = req.params;
+        const query = { _id: new ObjectId(id) };
+        const updatedDoc = {
+          $set: {
+            isApproved: "approved",
+          },
+        };
+        const result = await userCollection.updateOne(query, updatedDoc);
+        res.send(result);
+      }
+    );
     //block agent
     app.patch(
       "/block-agent/:id",

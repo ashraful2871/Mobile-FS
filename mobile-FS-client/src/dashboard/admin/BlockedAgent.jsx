@@ -1,7 +1,38 @@
 import React from "react";
-import { FaEdit, FaTrashRestoreAlt } from "react-icons/fa";
+import { FaLockOpen } from "react-icons/fa";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import Swal from "sweetalert2";
 
-const BlockedAgent = ({ blockAgent }) => {
+const BlockedAgent = ({ blockAgent, refetch }) => {
+  const axiosSecure = useAxiosSecure();
+  //   const { data } = axiosSecure.patch();
+
+  const handleBlock = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to Unblock this user!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Unblock it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        console.log(id);
+
+        const { data } = await axiosSecure.patch(`/unblock-agent/${id}`);
+        console.log(data);
+        if (data.modifiedCount > 0) {
+          refetch();
+          Swal.fire({
+            title: "Unblocked!",
+            text: "Agent has been Unblocked.",
+            icon: "success",
+          });
+        }
+      }
+    });
+  };
   return (
     <div className="space-y-4">
       <h2 className="text-xl md:text-3xl font-bold">
@@ -23,7 +54,10 @@ const BlockedAgent = ({ blockAgent }) => {
             </thead>
             <tbody className="border-2 w-full ">
               {blockAgent.map((agent, idx) => (
-                <tr className="border border-gray-300 text-xs md:text-base">
+                <tr
+                  key={idx}
+                  className="border border-gray-300 text-xs md:text-base"
+                >
                   <th className="border border-gray-300">{idx + 1}</th>
                   <td className="text-center border border-gray-300">
                     {agent.name}
@@ -43,10 +77,10 @@ const BlockedAgent = ({ blockAgent }) => {
                   <th className="border border-gray-300">
                     <div className="flex justify-center gap-4">
                       <button
-                        //onClick={() => handleDelete(session._id)}
+                        onClick={() => handleBlock(agent._id)}
                         className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-all flex gap-1 items-center shadow-md disabled:bg-gray-500 disabled:cursor-not-allowed"
                       >
-                        <FaTrashRestoreAlt /> Unblock
+                        <FaLockOpen className="text-lg" /> Unblock
                       </button>
                     </div>
                   </th>
