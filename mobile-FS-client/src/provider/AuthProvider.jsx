@@ -64,9 +64,13 @@ const AuthProvider = ({ children }) => {
   const logOut = async () => {
     setLoading(true);
     try {
-      await axios.get(`${import.meta.env.VITE_API_URL}/logout`, {
-        withCredentials: true,
-      });
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/logout`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
       setUser(null);
     } catch (error) {
       console.error("Logout error:", error);

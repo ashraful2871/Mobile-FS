@@ -12,7 +12,7 @@ const Privet = ({ children }) => {
   }
 
   if (!user) {
-    return <Navigate state={{ from: location }} to="/login" />;
+    return <Navigate state={{ from: location.pathname }} to="/login" />;
   }
 
   return children; // Render the children if the user is authenticated
