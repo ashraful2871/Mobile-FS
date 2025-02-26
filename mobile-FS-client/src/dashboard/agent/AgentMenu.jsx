@@ -6,7 +6,7 @@ const AgentMenu = () => {
     <div>
       <ul className="menu font-semibold text-base text-base-content">
         <li>
-          <NavLink to="/dashboard/transaction">Transaction</NavLink>
+          <NavLink to="/dashboard/agent-transaction">Transaction</NavLink>
         </li>
         <li>
           <NavLink to="/dashboard/create-study">Create study</NavLink>

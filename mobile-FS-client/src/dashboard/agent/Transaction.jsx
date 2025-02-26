@@ -3,7 +3,7 @@ import useAuth from "../../hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import Loading from "../../components/Loading";
-import { TbCurrencyTaka } from "react-icons/tb";
+import { format } from "date-fns";
 
 const Transaction = () => {
   const { user } = useAuth();
@@ -48,10 +48,10 @@ const Transaction = () => {
               <p className="text-lg font-semibold text-gray-800">
                 Current Balance: 4955 BDT.
               </p>
-              {/* <p className="text-sm text-gray-600 mt-2">
-                Date: {format(new Date(transaction.timestamp), "M/d/yyyy")} at
-                Time: {format(new Date(transaction.timestamp), "h:mm:ss a")}
-              </p> */}
+              <p className="text-sm text-gray-600 mt-2">
+                Date: {format(new Date(transaction.timestamp), "dd MMM yyyy")}{" "}
+                at Time: {format(new Date(transaction.timestamp), "hh:mm:ss a")}
+              </p>
             </div>
           </div>
         ))}

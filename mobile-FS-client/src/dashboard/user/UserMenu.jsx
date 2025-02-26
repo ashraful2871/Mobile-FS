@@ -7,7 +7,7 @@ const UserMenu = () => {
       <ul className="menu font-semibold text-base text-base-content">
         {" "}
         <li>
-          <NavLink to="/dashboard/view-book-session">
+          <NavLink to="/dashboard/user-transaction">
             View booked session
           </NavLink>
         </li>

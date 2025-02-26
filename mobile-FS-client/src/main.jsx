@@ -78,7 +78,7 @@ const router = createBrowserRouter([
       },
       //agent menu
       {
-        path: "transaction",
+        path: "agent-transaction",
         element: <Transaction></Transaction>,
       },
     ],
