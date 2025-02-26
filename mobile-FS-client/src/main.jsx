@@ -17,6 +17,7 @@ import AllUsers from "./dashboard/user/AllUsers";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ViewAllUserTransaction from "./dashboard/user/ViewAllUserTransaction";
 import Transaction from "./dashboard/agent/Transaction";
+import UserTransaction from "./dashboard/user/UserTransaction";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -34,6 +35,8 @@ const router = createBrowserRouter([
         path: "/sign-up",
         element: <SignUp></SignUp>,
       },
+
+      //user menu
       {
         path: "/send-money",
         element: (
@@ -65,7 +68,11 @@ const router = createBrowserRouter([
 
   {
     path: "/dashboard",
-    element: <DashBoard></DashBoard>,
+    element: (
+      <Privet>
+        <DashBoard></DashBoard>
+      </Privet>
+    ),
     children: [
       //admin menu
       {
@@ -80,6 +87,10 @@ const router = createBrowserRouter([
       {
         path: "agent-transaction",
         element: <Transaction></Transaction>,
+      },
+      {
+        path: "user-transaction",
+        element: <UserTransaction></UserTransaction>,
       },
     ],
   },

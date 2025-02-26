@@ -61,10 +61,23 @@ async function run() {
 
     //verifyAdmin  middleware
     const verifyAdmin = async (req, res, next) => {
-      const email = req.user?.email;
-      const query = { email };
+      const userId = req.user?.userId;
+      const query = { _id: new ObjectId(userId) };
       const result = await userCollection.findOne(query);
       if (!result || result?.role !== "admin") {
+        return res
+          .status(403)
+          .send({ message: "Forbidden Access Admin Only Actions" });
+      }
+
+      next();
+    };
+    //verifyAdmin  middleware
+    const verifyAgent = async (req, res, next) => {
+      const userId = req.user?.userId;
+      const query = { _id: new ObjectId(userId) };
+      const result = await userCollection.findOne(query);
+      if (!result || result?.role !== "agent") {
         return res
           .status(403)
           .send({ message: "Forbidden Access Admin Only Actions" });
@@ -234,6 +247,22 @@ async function run() {
         { $set: { totalBalance: newTotalBalance } }
       );
 
+      // Insert transaction into transactionCollection
+      const transaction = {
+        type: "Send-Money",
+        userId: sender._id,
+        userName: sender.name,
+        userPhone: sender.mobileNumber,
+        recipientId: recipient._id,
+        recipientName: recipient.name,
+        recipientPhone: recipient.mobileNumber,
+        amount: amount,
+        fee: fee,
+        timestamp: new Date(),
+      };
+
+      await transactionCollection.insertOne(transaction);
+
       res.json({
         message: `Sent ${amount} BDT to ${recipientPhone}, Fee: ${fee} BDT`,
       });
@@ -338,7 +367,7 @@ async function run() {
     });
 
     // cash-in // agent route and agentVerify
-    app.post("/cash-in", verifyToken, async (req, res) => {
+    app.post("/cash-in", verifyToken, verifyAgent, async (req, res) => {
       const { userPhone, amount, agentPin } = req.body;
       const { userId } = req.user; // The authenticated agent
 
@@ -424,7 +453,7 @@ async function run() {
     });
 
     //get all users //verify admin
-    app.get("/all-users", verifyToken, async (req, res) => {
+    app.get("/all-users", verifyToken, verifyAdmin, async (req, res) => {
       try {
         const { search } = req.query;
         console.log(search);
@@ -451,7 +480,7 @@ async function run() {
     });
 
     //user balance
-    app.get("/user-balance/:userId", async (req, res) => {
+    app.get("/user-balance/:userId", verifyToken, async (req, res) => {
       const { userId } = req.params;
 
       // Validate ObjectId before converting
@@ -474,13 +503,19 @@ async function run() {
       }
     });
 
-    app.get("/view-transaction/:id", verifyToken, async (req, res) => {
-      const { id } = req.params;
+    //view all-user transaction
+    app.get(
+      "/view-transaction/:id",
+      verifyToken,
+      verifyAdmin,
+      async (req, res) => {
+        const { id } = req.params;
 
-      const query = { userId: new ObjectId(id) };
-      const result = await transactionCollection.find(query).toArray();
-      res.send(result);
-    });
+        const query = { userId: new ObjectId(id) };
+        const result = await transactionCollection.find(query).toArray();
+        res.send(result);
+      }
+    );
 
     //user role management
     app.get("/user/role/:id", verifyToken, async (req, res) => {
@@ -491,7 +526,35 @@ async function run() {
     });
 
     //agent transaction //agentVerify
-    app.get("/agent-transaction/:id", verifyToken, async (req, res) => {
+    app.get(
+      "/agent-transaction/:id",
+      verifyToken,
+      verifyAgent,
+      async (req, res) => {
+        try {
+          const userId = req.params.id;
+          console.log("Received ID:", userId);
+
+          // Check if userId is a valid ObjectId
+          if (!ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid user ID format" });
+          }
+
+          const query = {
+            agentId: new ObjectId(userId),
+          };
+          const result = await transactionCollection.find(query).toArray();
+
+          res.json(result);
+        } catch (error) {
+          console.error("Error fetching agent transactions:", error);
+          res.status(500).json({ message: "Internal server error" });
+        }
+      }
+    );
+
+    //user transaction //verifyToken
+    app.get("/user-transaction/:id", verifyToken, async (req, res) => {
       try {
         const userId = req.params.id;
         console.log("Received ID:", userId);
@@ -502,7 +565,7 @@ async function run() {
         }
 
         const query = {
-          agentId: new ObjectId(userId),
+          userId: new ObjectId(userId),
         };
         const result = await transactionCollection.find(query).toArray();
 
