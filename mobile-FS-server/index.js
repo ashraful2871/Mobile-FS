@@ -10,7 +10,11 @@ const app = express();
 
 //middleware
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: [
+    "http://localhost:5173",
+    "https://mobile-fs.web.app",
+    "https://mobile-fs.firebaseapp.com",
+  ],
   credentials: true,
   optionSuccessStatus: 200,
 };
@@ -135,7 +139,7 @@ async function run() {
       res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
+        sameSite: "none",
         maxAge: 24 * 60 * 60 * 1000,
       });
       res.json({ token, message: "Login successful!" });
@@ -537,7 +541,6 @@ async function run() {
       async (req, res) => {
         try {
           const userId = req.params.id;
-          console.log("Received ID:", userId);
 
           // Check if userId is a valid ObjectId
           if (!ObjectId.isValid(userId)) {
@@ -561,7 +564,6 @@ async function run() {
     app.get("/user-transaction/:id", verifyToken, async (req, res) => {
       try {
         const userId = req.params.id;
-        console.log("Received ID:", userId);
 
         // Check if userId is a valid ObjectId
         if (!ObjectId.isValid(userId)) {

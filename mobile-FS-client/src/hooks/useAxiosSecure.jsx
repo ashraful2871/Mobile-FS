@@ -10,24 +10,33 @@ export const axiosSecure = axios.create({
 
 const useAxiosSecure = () => {
   const navigate = useNavigate();
-  const { logOut } = useAuth();
+  const { logOut, user } = useAuth();
+
   useEffect(() => {
-    axiosSecure.interceptors.response.use(
-      (res) => {
-        return res;
-      },
-      async (error) => {
-        console.log("Error caught from axios interceptor-->", error.response);
-        if (error.response.status === 401 || error.response.status === 403) {
-          // logout
-          logOut();
-          // navigate to login
-          navigate("/login");
+    if (user) {
+      const interceptor = axiosSecure.interceptors.response.use(
+        (res) => res,
+        async (error) => {
+          console.log("Error caught from axios interceptor-->", error);
+
+          if (
+            error.response?.status === 401 ||
+            error.response?.status === 403
+          ) {
+            await logOut(); // Ensure logout happens before navigating
+            navigate("/login", { replace: true });
+          }
+
+          return Promise.reject(error);
         }
-        return Promise.reject(error);
-      }
-    );
+      );
+      // Cleanup to remove duplicate interceptors
+      return () => {
+        axiosSecure.interceptors.response.eject(interceptor);
+      };
+    }
   }, [logOut, navigate]);
+
   return axiosSecure;
 };
 
