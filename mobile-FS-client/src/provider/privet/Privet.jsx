@@ -1,19 +1,21 @@
+import { useContext, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import Loading from "../../components/Loading";
-import useAuth from "../../hooks/useAuth";
+import { AuthContext } from "../AuthProvider";
 
 const Privet = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, loading } = useContext(AuthContext); // Ensure the user state is coming from context
   const location = useLocation();
 
   if (loading) {
-    return <Loading />; // Show loading while checking auth status
+    return <Loading />; // Show loading while fetching user data
   }
 
   if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />; // Redirect to login if not authenticated
+    return <Navigate state={{ from: location }} to="/login" />;
   }
 
-  return children; // Allow access to the children if authenticated
+  return children; // Render the children if the user is authenticated
 };
+
 export default Privet;

@@ -41,6 +41,7 @@ const SignUp = () => {
       // console.log(data);
       signUpUser(formInfo);
       toast.success("Registration successful!");
+      navigate("/login");
     } catch (error) {
       // toast.error(error.response?.data?.message);
       console.log(error);

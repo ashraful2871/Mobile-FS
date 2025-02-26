@@ -482,7 +482,7 @@ async function run() {
     //user balance
     app.get("/user-balance/:userId", verifyToken, async (req, res) => {
       const { userId } = req.params;
-
+      // console.log(userId);
       // Validate ObjectId before converting
       if (!ObjectId.isValid(userId)) {
         return res.status(400).json({ error: "Invalid userId format" });
@@ -495,8 +495,12 @@ async function run() {
         if (!result) {
           return res.status(404).json({ error: "User not found" });
         }
-
-        res.send(result);
+        if (result.role === "agent" || result.role === "user") {
+          res.send({ balance: result.balance });
+        }
+        if (result.role === "admin") {
+          res.send({ balance: result.balance, role: result.role });
+        }
       } catch (error) {
         console.error("Error fetching user balance:", error);
         res.status(500).json({ error: "Server error" });

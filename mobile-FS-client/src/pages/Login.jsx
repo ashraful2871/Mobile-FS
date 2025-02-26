@@ -1,11 +1,13 @@
 import React from "react";
 import toast from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
 const Login = () => {
-  const { signInUser } = useAuth();
+  const { signInUser, setUser, checkAuthStatus } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -13,11 +15,12 @@ const Login = () => {
     const mobileNumber = formData.get("mobile");
     const pin = formData.get("pin");
 
-    const loginInfo = { mobileNumber, pin };
-
     try {
-      await signInUser(mobileNumber, pin); // Use signInUser from AuthContext
+      const result = await signInUser(mobileNumber, pin); // Sign in user
+      // console.log(result);
       toast.success("Login successful!");
+      navigate(location?.state ? location.state : "/"); // Redirect to the previous route or home
+      checkAuthStatus();
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
     }

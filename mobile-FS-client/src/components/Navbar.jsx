@@ -1,69 +1,79 @@
 import React from "react";
 import useAuth from "../hooks/useAuth";
 import { Link, NavLink } from "react-router-dom";
-import { TbCurrencyTaka } from "react-icons/tb";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../hooks/useAxiosSecure";
-import Loading from "./Loading";
-import axios from "axios";
 import BalanceDisplay from "./BalanceDisplay ";
 import useRole from "../hooks/useRole";
 
 const Navbar = () => {
   const { user, logOut } = useAuth();
   const axiosSecure = useAxiosSecure();
-  // console.log(user?.userId);
+
   const [role] = useRole();
-  console.log(role);
 
   const { data: balance = {}, isLoading } = useQuery({
     queryKey: ["user-balance", user?.userId],
     queryFn: async () => {
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_API_URL}/user-balance/${user?.userId}`
-      );
+      const { data } = await axiosSecure.get(`/user-balance/${user?.userId}`);
       return data;
     },
   });
-  if (isLoading) {
-    return <Loading />;
-  }
-  console.log(balance);
-  // axios
-  //   .get(`${import.meta.env.VITE_API_URL}/user-balance/${user?.userId}`)
-  //   .then((res) => {
-  //     console.log(res.data);
-  //   });
-  const links = (
+  // console.log(balance);
+  const links = user ? (
     <>
+      {role === "user" && (
+        <>
+          {" "}
+          <li>
+            <NavLink to="/send-money">Send Money</NavLink>
+          </li>
+          <li>
+            <NavLink to="/cash-out">Cash Out</NavLink>
+          </li>
+        </>
+      )}
+      {role === "agent" && (
+        <>
+          <li>
+            <NavLink to="/cash-in">Cash In</NavLink>
+          </li>
+        </>
+      )}
+      {role === "admin" && (
+        <>
+          <li>
+            <NavLink to="/dashboard/all-users">Dashboard</NavLink>
+          </li>
+        </>
+      )}
+      {role === "agent" && (
+        <>
+          <li>
+            <NavLink to="/dashboard/agent-transaction">Dashboard</NavLink>
+          </li>
+        </>
+      )}
+      {role === "user" && (
+        <>
+          <li>
+            <NavLink to="/dashboard/user-transaction">Dashboard</NavLink>
+          </li>
+        </>
+      )}
       <li>
-        <a className="justify-between">
-          Profile
-          <span className="badge">New</span>
-        </a>
+        <button className="btn btn-sm" onClick={logOut}>
+          Logout
+        </button>
       </li>
+    </>
+  ) : (
+    <>
       <li>
         <NavLink to="/sign-up">Sign Up</NavLink>
       </li>
       <li>
         <NavLink to="/login">login</NavLink>
-      </li>
-      <li>
-        <NavLink to="/send-money">Send Money</NavLink>
-      </li>
-      <li>
-        <NavLink to="/cash-out">Cash Out</NavLink>
-      </li>
-      <li>
-        <NavLink to="/cash-in">Cash In</NavLink>
-      </li>
-      <li>
-        <NavLink to="/dashboard">Dashboard</NavLink>
-      </li>
-      <li>
-        <button className="btn btn-sm" onClick={logOut}>
-          Logout
-        </button>
       </li>
     </>
   );
@@ -82,7 +92,14 @@ const Navbar = () => {
           </span>
           <span>{balance.balance} BDT</span>
         </div> */}
-        <BalanceDisplay balance={balance}></BalanceDisplay>
+        {user && isLoading ? (
+          <button className="btn btn-square">
+            <span className="loading loading-spinner"></span>
+          </button>
+        ) : (
+          user && <BalanceDisplay balance={balance}></BalanceDisplay>
+        )}
+
         <div className="dropdown dropdown-end">
           <div
             tabIndex={0}

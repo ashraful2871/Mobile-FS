@@ -22,7 +22,7 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  // Check the auth status when the component mounts (like `onAuthStateChanged`)
+  //Check the auth status when the component mounts (like `onAuthStateChanged`)
   useEffect(() => {
     checkAuthStatus();
   }, []);
@@ -46,19 +46,17 @@ const AuthProvider = ({ children }) => {
 
   // Sign In
   const signInUser = async (mobileNumber, pin) => {
-    setLoading(true);
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/login`,
         { mobileNumber, pin },
         { withCredentials: true }
       );
+      console.log(res.data);
       setUser(res.data.user);
       return res.data;
     } catch (error) {
       throw error.response?.data?.message || "Login failed";
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -85,6 +83,7 @@ const AuthProvider = ({ children }) => {
         signUpUser,
         signInUser,
         logOut,
+        checkAuthStatus,
       }}
     >
       {children}
