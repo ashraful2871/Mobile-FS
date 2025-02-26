@@ -23,6 +23,7 @@ const CashOut = () => {
       const { data } = await axiosSecure.post(`/cash-out`, cashOutInfo);
 
       setMessage(`✅ ${data.message}`);
+      e.target.reset();
     } catch (error) {
       setMessage(
         `❌ ${error.response?.data?.message || "Something went wrong"}`

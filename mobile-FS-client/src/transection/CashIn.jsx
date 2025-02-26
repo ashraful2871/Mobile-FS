@@ -23,6 +23,7 @@ const CashIn = () => {
       const { data } = await axiosSecure.post(`/cash-in`, cashInInfo);
 
       setMessage(`✅ ${data.message}`);
+      e.target.reset();
     } catch (error) {
       setMessage(
         `❌ ${error.response?.data?.message || "Something went wrong"}`
