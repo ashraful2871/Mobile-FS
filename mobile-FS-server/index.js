@@ -115,7 +115,7 @@ async function run() {
         role,
         pin: hasPin,
         balance: initialBalance,
-        isApproved: role === "agent" ? false : true,
+        isApproved: role === "agent" ? "not-approved" : "approved",
       };
       await userCollection.insertOne(newUser);
       res.status(201).json({ message: "Registration successful!" });
@@ -283,7 +283,7 @@ async function run() {
       const agent = await userCollection.findOne({
         mobileNumber: agentPhone,
         role: "agent",
-        isApproved: true,
+        isApproved: "approved",
       });
 
       if (!user) {
@@ -386,7 +386,7 @@ async function run() {
       const agent = await userCollection.findOne({
         _id: new ObjectId(userId),
         role: "agent",
-        isApproved: true,
+        isApproved: "approved",
       });
 
       if (!agent) {
@@ -575,6 +575,66 @@ async function run() {
         res.status(500).json({ message: "Internal server error" });
       }
     });
+
+    //agent approved
+    app.get("/agent-approved", verifyToken, verifyAdmin, async (req, res) => {
+      const query = { role: "agent" };
+      const result = await userCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    //agent reject
+    app.patch(
+      "/reject-agent/:id",
+      verifyToken,
+      verifyAdmin,
+      async (req, res) => {
+        const { id } = req.params;
+        const query = { _id: new ObjectId(id) };
+        const updatedDoc = {
+          $set: {
+            isApproved: "blocked",
+          },
+        };
+        const result = await userCollection.updateOne(query, updatedDoc);
+        res.send(result);
+      }
+    );
+
+    //agent approve
+    app.patch(
+      "/approve-agent/:id",
+      verifyToken,
+      verifyAdmin,
+      async (req, res) => {
+        const { id } = req.params;
+        const query = { _id: new ObjectId(id) };
+        const updatedDoc = {
+          $set: {
+            isApproved: "approved",
+          },
+        };
+        const result = await userCollection.updateOne(query, updatedDoc);
+        res.send(result);
+      }
+    );
+    //block agent
+    app.patch(
+      "/block-agent/:id",
+      verifyToken,
+      verifyAdmin,
+      async (req, res) => {
+        const { id } = req.params;
+        const query = { _id: new ObjectId(id) };
+        const updatedDoc = {
+          $set: {
+            isApproved: "blocked",
+          },
+        };
+        const result = await userCollection.updateOne(query, updatedDoc);
+        res.send(result);
+      }
+    );
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });

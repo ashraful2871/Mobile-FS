@@ -21,6 +21,7 @@ import UserTransaction from "./dashboard/user/UserTransaction";
 import AdminRoute from "./dashboard/admin/AdminRoute";
 import AgentRoute from "./dashboard/agent/AgentRoute";
 import UserRoute from "./dashboard/user/UserRoute";
+import AgentApproval from "./dashboard/admin/AgentApproval";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -91,6 +92,14 @@ const router = createBrowserRouter([
         element: (
           <AdminRoute>
             <ViewAllUserTransaction></ViewAllUserTransaction>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "request-approval",
+        element: (
+          <AdminRoute>
+            <AgentApproval></AgentApproval>
           </AdminRoute>
         ),
       },

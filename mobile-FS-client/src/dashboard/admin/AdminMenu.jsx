@@ -10,7 +10,7 @@ const AdminMenu = () => {
           <NavLink to="/dashboard/all-users">View all users</NavLink>
         </li>
         <li>
-          <NavLink to="/dashboard/all-study-session">Approval Request</NavLink>
+          <NavLink to="/dashboard/request-approval">Approval Request</NavLink>
         </li>
         <li>
           <NavLink to="/dashboard/all-materials">View all materials</NavLink>
