@@ -16,6 +16,7 @@ import DashBoard from "./layout/DashBoard";
 import AllUsers from "./dashboard/user/AllUsers";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ViewAllUserTransaction from "./dashboard/user/ViewAllUserTransaction";
+import Transaction from "./dashboard/agent/Transaction";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -66,6 +67,7 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: <DashBoard></DashBoard>,
     children: [
+      //admin menu
       {
         path: "all-users",
         element: <AllUsers></AllUsers>,
@@ -73,6 +75,11 @@ const router = createBrowserRouter([
       {
         path: "view-user-transaction/:id",
         element: <ViewAllUserTransaction></ViewAllUserTransaction>,
+      },
+      //agent menu
+      {
+        path: "transaction",
+        element: <Transaction></Transaction>,
       },
     ],
   },

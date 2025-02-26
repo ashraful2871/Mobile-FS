@@ -3,8 +3,12 @@ import { LuLogOut } from "react-icons/lu";
 import { TiThMenu } from "react-icons/ti";
 import { Link, Outlet } from "react-router-dom";
 import AdminMenu from "../dashboard/admin/AdminMenu";
+import AgentMenu from "../dashboard/agent/AgentMenu";
+import UserMenu from "../dashboard/user/UserMenu";
+import useRole from "../hooks/useRole";
 
 const DashBoard = () => {
+  const [role, isLoading] = useRole();
   return (
     <div className="lg:flex lg:h-screen overflow-hidden">
       {/* Sidebar */}
@@ -20,10 +24,10 @@ const DashBoard = () => {
 
           <div>
             {/* Sidebar Menus */}
-            <AdminMenu></AdminMenu>
-            {/* {role === "admin" && <AdminMenu />}
-            {role === "tutor" && <TutorMenu />}
-            {role === "student" && <StudentMenu />} */}
+
+            {role === "admin" && <AdminMenu></AdminMenu>}
+            {role === "agent" && <AgentMenu></AgentMenu>}
+            {role === "user" && <UserMenu></UserMenu>}
           </div>
         </div>
         <div className="drawer z-50 block lg:hidden">

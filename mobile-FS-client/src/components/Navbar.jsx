@@ -7,11 +7,14 @@ import useAxiosSecure from "../hooks/useAxiosSecure";
 import Loading from "./Loading";
 import axios from "axios";
 import BalanceDisplay from "./BalanceDisplay ";
+import useRole from "../hooks/useRole";
 
 const Navbar = () => {
   const { user, logOut } = useAuth();
   const axiosSecure = useAxiosSecure();
-  console.log(user?.userId);
+  // console.log(user?.userId);
+  const [role] = useRole();
+  console.log(role);
 
   const { data: balance = {}, isLoading } = useQuery({
     queryKey: ["user-balance", user?.userId],

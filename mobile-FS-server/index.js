@@ -107,7 +107,6 @@ async function run() {
     //login
     app.post("/login", async (req, res) => {
       const { mobileNumber, pin } = req.body;
-      console.log(mobileNumber, pin);
       const user = await userCollection.findOne({ mobileNumber });
       if (!user) {
         return res.status(400).json({ message: "User Not Found" });
@@ -132,7 +131,6 @@ async function run() {
     //send user
     app.get("/me", verifyToken, async (req, res) => {
       res.json(req.user);
-      console.log(req.user); // Send user info if the token is valid
     });
 
     // Generate jwt token
@@ -413,6 +411,7 @@ async function run() {
         agentName: agent.name,
         agentPhone: agent.mobileNumber,
         amount: amount,
+        fee: 0,
         timestamp: new Date(),
       };
 
@@ -454,7 +453,6 @@ async function run() {
     //user balance
     app.get("/user-balance/:userId", async (req, res) => {
       const { userId } = req.params;
-      console.log("Received userId:", userId); // Debugging
 
       // Validate ObjectId before converting
       if (!ObjectId.isValid(userId)) {
@@ -463,8 +461,7 @@ async function run() {
 
       try {
         const query = { _id: new ObjectId(userId) };
-        const result = await userCollection.findOne(query); // Use findOne
-        console.log("User balance result:", result);
+        const result = await userCollection.findOne(query);
 
         if (!result) {
           return res.status(404).json({ error: "User not found" });
@@ -483,6 +480,37 @@ async function run() {
       const query = { userId: new ObjectId(id) };
       const result = await transactionCollection.find(query).toArray();
       res.send(result);
+    });
+
+    //user role management
+    app.get("/user/role/:id", verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await userCollection.findOne(query);
+      res.send({ role: result?.role });
+    });
+
+    //agent transaction //agentVerify
+    app.get("/agent-transaction/:id", verifyToken, async (req, res) => {
+      try {
+        const userId = req.params.id;
+        console.log("Received ID:", userId);
+
+        // Check if userId is a valid ObjectId
+        if (!ObjectId.isValid(userId)) {
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+
+        const query = {
+          agentId: new ObjectId(userId),
+        };
+        const result = await transactionCollection.find(query).toArray();
+
+        res.json(result);
+      } catch (error) {
+        console.error("Error fetching agent transactions:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
     });
 
     // Send a ping to confirm a successful connection
