@@ -2,9 +2,35 @@ import React from "react";
 import useAuth from "../hooks/useAuth";
 import { Link, NavLink } from "react-router-dom";
 import { TbCurrencyTaka } from "react-icons/tb";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../hooks/useAxiosSecure";
+import Loading from "./Loading";
+import axios from "axios";
+import BalanceDisplay from "./BalanceDisplay ";
 
 const Navbar = () => {
   const { user, logOut } = useAuth();
+  const axiosSecure = useAxiosSecure();
+  console.log(user?.userId);
+
+  const { data: balance = {}, isLoading } = useQuery({
+    queryKey: ["user-balance", user?.userId],
+    queryFn: async () => {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/user-balance/${user?.userId}`
+      );
+      return data;
+    },
+  });
+  if (isLoading) {
+    return <Loading />;
+  }
+  console.log(balance);
+  // axios
+  //   .get(`${import.meta.env.VITE_API_URL}/user-balance/${user?.userId}`)
+  //   .then((res) => {
+  //     console.log(res.data);
+  //   });
   const links = (
     <>
       <li>
@@ -47,12 +73,13 @@ const Navbar = () => {
       </div>
       <div className="flex-none gap-2">
         {/* show balance here */}
-        <div className="flex items-center gap-[2px] text-2xl font-semibold">
+        {/* <div className="flex items-center gap-[2px] text-2xl font-semibold">
           <span>
             <TbCurrencyTaka />
           </span>
-          <span>0</span>
-        </div>
+          <span>{balance.balance} BDT</span>
+        </div> */}
+        <BalanceDisplay balance={balance}></BalanceDisplay>
         <div className="dropdown dropdown-end">
           <div
             tabIndex={0}

@@ -131,7 +131,8 @@ async function run() {
 
     //send user
     app.get("/me", verifyToken, async (req, res) => {
-      res.json(req.user); // Send user info if the token is valid
+      res.json(req.user);
+      console.log(req.user); // Send user info if the token is valid
     });
 
     // Generate jwt token
@@ -343,7 +344,7 @@ async function run() {
       const { userPhone, amount, agentPin } = req.body;
       const { userId } = req.user; // The authenticated agent
 
-      // Minimum cash-in amount check (optional, can adjust as needed)
+      // Minimum cash-in amount check
       if (amount < 100) {
         return res
           .status(400)
@@ -356,7 +357,7 @@ async function run() {
         return res.status(400).json({ message: "User not found" });
       }
 
-      // Find the agent by userId (the agent is the currently authenticated user)
+      // Find the agent by userId
       const agent = await userCollection.findOne({
         _id: new ObjectId(userId),
         role: "agent",
@@ -374,6 +375,17 @@ async function run() {
       if (!isPinValid) {
         return res.status(400).json({ message: "Invalid Agent PIN!" });
       }
+
+      // Check if the agent has enough balance
+      if (agent.balance < amount) {
+        return res.status(400).json({ message: "Insufficient balance!" });
+      }
+
+      // Deduct the amount from the agent's balance
+      await userCollection.updateOne(
+        { _id: agent._id },
+        { $inc: { balance: -amount } }
+      );
 
       // Update the user's balance
       await userCollection.updateOne(
@@ -406,7 +418,7 @@ async function run() {
 
       await transactionCollection.insertOne(transaction);
 
-      // Send a notification or response
+      // Send response
       res.json({
         message: `Cash-in successful! Amount: ${amount} BDT has been credited to the user's account.`,
       });
@@ -436,6 +448,32 @@ async function run() {
         res
           .status(500)
           .send({ error: "An error occurred while searching users." });
+      }
+    });
+
+    //user balance
+    app.get("/user-balance/:userId", async (req, res) => {
+      const { userId } = req.params;
+      console.log("Received userId:", userId); // Debugging
+
+      // Validate ObjectId before converting
+      if (!ObjectId.isValid(userId)) {
+        return res.status(400).json({ error: "Invalid userId format" });
+      }
+
+      try {
+        const query = { _id: new ObjectId(userId) };
+        const result = await userCollection.findOne(query); // Use findOne
+        console.log("User balance result:", result);
+
+        if (!result) {
+          return res.status(404).json({ error: "User not found" });
+        }
+
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching user balance:", error);
+        res.status(500).json({ error: "Server error" });
       }
     });
 
