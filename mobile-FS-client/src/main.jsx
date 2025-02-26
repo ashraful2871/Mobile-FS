@@ -18,6 +18,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ViewAllUserTransaction from "./dashboard/user/ViewAllUserTransaction";
 import Transaction from "./dashboard/agent/Transaction";
 import UserTransaction from "./dashboard/user/UserTransaction";
+import AdminRoute from "./dashboard/admin/AdminRoute";
+import AgentRoute from "./dashboard/agent/AgentRoute";
+import UserRoute from "./dashboard/user/UserRoute";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -77,20 +80,38 @@ const router = createBrowserRouter([
       //admin menu
       {
         path: "all-users",
-        element: <AllUsers></AllUsers>,
+        element: (
+          <AdminRoute>
+            <AllUsers></AllUsers>
+          </AdminRoute>
+        ),
       },
       {
         path: "view-user-transaction/:id",
-        element: <ViewAllUserTransaction></ViewAllUserTransaction>,
+        element: (
+          <AdminRoute>
+            <ViewAllUserTransaction></ViewAllUserTransaction>
+          </AdminRoute>
+        ),
       },
       //agent menu
       {
         path: "agent-transaction",
-        element: <Transaction></Transaction>,
+        element: (
+          <AgentRoute>
+            <Transaction></Transaction>
+          </AgentRoute>
+        ),
       },
+
+      //user route
       {
         path: "user-transaction",
-        element: <UserTransaction></UserTransaction>,
+        element: (
+          <UserRoute>
+            <UserTransaction></UserTransaction>
+          </UserRoute>
+        ),
       },
     ],
   },
