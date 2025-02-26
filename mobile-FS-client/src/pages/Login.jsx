@@ -1,35 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { FcGoogle } from "react-icons/fc";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-
+import ButtonLoading from "../components/ButtonLoading";
+import Lottie from "lottie-react";
+import loginAni from "../../public/login.json";
 const Login = () => {
-  const { signInUser, setUser, checkAuthStatus } = useAuth();
+  const { signInUser, checkAuthStatus } = useAuth();
+  const [loading, setLoading] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const formData = new FormData(e.target);
     const mobileNumber = formData.get("mobile");
     const pin = formData.get("pin");
 
     try {
-      const result = await signInUser(mobileNumber, pin); // Sign in user
+      const result = await signInUser(mobileNumber, pin);
       // console.log(result);
       toast.success("Login successful!");
-      navigate(location?.state ? location.state : "/"); // Redirect to the previous route or home
+      navigate(location?.state ? location.state : "/");
       checkAuthStatus();
+      setLoading(false);
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
       <div className="hidden md:flex md:w-1/2 bg-purple-50 items-center justify-center p-6">
-        <div className="w-full max-w-sm">{/* Animation can go here */}</div>
+        <div className="w-full max-w-sm">
+          <div className="w-full max-w-sm">
+            <Lottie animationData={loginAni} loop={true} />
+          </div>
+        </div>
       </div>
 
       <div className="w-full md:w-1/2 flex items-center justify-center p-6">
@@ -63,27 +72,17 @@ const Login = () => {
                 required
               />
             </div>
-            <button
-              type="submit"
-              className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition"
-            >
-              Sign in
-            </button>
+            {loading ? (
+              <ButtonLoading />
+            ) : (
+              <button
+                type="submit"
+                className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition"
+              >
+                Sign in
+              </button>
+            )}
           </form>
-
-          <div className="flex items-center my-4">
-            <div className="border-b w-full"></div>
-            <span className="mx-3 text-gray-400">or</span>
-            <div className="border-b w-full"></div>
-          </div>
-
-          <button
-            // onClick={handleGoogleSignUp}
-            className="w-full flex items-center justify-center border py-3 rounded-lg hover:bg-gray-100 transition"
-          >
-            <FcGoogle className="mr-2 text-2xl" /> Sign in with Google
-          </button>
-
           <p className="mt-4 text-gray-600 text-center">
             Don’t have an account?{" "}
             <Link to="/sign-up" className="text-purple-600 hover:underline">

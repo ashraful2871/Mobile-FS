@@ -3,14 +3,17 @@ import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import toast from "react-hot-toast";
-import axios from "axios";
+import signAni from "../../public/signUp.json";
+import Lottie from "lottie-react";
 
 const SignUp = () => {
   const { signUpUser } = useAuth();
   const [role, setRole] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const formData = new FormData(e.target);
     const name = formData.get("name");
     const email = formData.get("email");
@@ -34,41 +37,23 @@ const SignUp = () => {
       pin,
     };
     try {
-      // const { data } = await axios.post(
-      //   `${import.meta.env.VITE_API_URL}/sign-up`,
-      //   formInfo
-      // );
-      // console.log(data);
       signUpUser(formInfo);
       toast.success("Registration successful!");
+      setLoading(false);
       navigate("/login");
     } catch (error) {
-      // toast.error(error.response?.data?.message);
-      console.log(error);
+      toast.error(error.response?.data?.message);
+
+      setLoading(false);
     }
-
-    // signUpUser(email, password)
-    //   .then(async (result) => {
-    //     updateUserProfile(name);
-    //     setUser({ ...result.user, displayName: name, photoURL: null });
-
-    //     const { data } = await axios.post(
-    //       `${import.meta.env.VITE_API_URL}/users`,
-    //       userInfo
-    //     );
-    //     console.log(data);
-    //     navigate("/");
-    //     toast.success("Sign up successfully");
-    //   })
-    //   .catch((error) => console.log(error.message));
   };
   return (
     <div className="flex flex-col md:flex-row h-screen">
       {/* Left Side - Animation (Hidden on Small Screens) */}
       <div className="hidden md:flex md:w-1/2 bg-purple-50 items-center justify-center p-6">
-        {/* <div className="w-full max-w-sm">
-          <Lottie animationData={SignUp} loop={true} />
-        </div> */}
+        <div className="w-full max-w-sm">
+          <Lottie animationData={signAni} loop={true} />
+        </div>
       </div>
 
       {/* Right Side - Sign Up Form */}
