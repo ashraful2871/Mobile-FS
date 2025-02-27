@@ -1,7 +1,3 @@
-Since both the **frontend** and **backend** are in a **single repository**, I'll adjust the **README.md** accordingly to reflect the correct project structure.
-
----
-
 # **Mobile Financial Service (MFS) Application**
 
 ## **Introduction**
@@ -76,37 +72,12 @@ This is a **secure and user-friendly Mobile Financial Service (MFS) application*
 - **Bcrypt.js** (for PIN Hashing)
 - **Cookie Parser & CORS**
 
-## **Project Structure**
-
-```sh
-mobile-fs-app/
-│── backend/       # Node.js + Express + MongoDB (Mongoose)
-│   ├── models/    # Mongoose Models
-│   ├── routes/    # API Routes
-│   ├── controllers/ # Business Logic
-│   ├── middlewares/ # JWT & Auth Middleware
-│   ├── config/    # Environment & DB Configuration
-│   ├── index.js   # Entry Point for Backend
-│
-│── frontend/      # React + Vite
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/ # API Calls
-│   │   ├── App.js
-│   │   ├── main.jsx
-│
-│── .env.example   # Environment Variables
-│── package.json   # Dependencies & Scripts
-│── README.md      # Project Documentation
-```
-
 ## **Installation**
 
 ### **1️⃣ Clone the Repository**
 
 ```sh
-git clone https://github.com/your-repo/mobile-fs-app.git
+git https://github.com/ashraful2871/Mobile-FS.git
 cd mobile-fs-app
 ```
 
@@ -187,18 +158,5 @@ npm run dev
 
 ## **Admin Credentials**
 
-**Email:** `hjdh@dfjh.com`  
+**phone Number:** `01940591004`  
 **Password:** `12345`
-
-## **Contributors**
-
-- **[Your Name]** - Developer
-- **[Your Teammate (if applicable)]**
-
-## **License**
-
-This project is licensed under the **MIT License**.
-
----
-
-This README now properly reflects the **combined frontend & backend repository** structure and provides a **clear installation guide, API reference, and project overview**. Let me know if you need any modifications! 🚀
