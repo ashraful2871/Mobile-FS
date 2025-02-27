@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import useAxiosSecure from "../hooks/useAxiosSecure";
+import toast from "react-hot-toast";
 
 const CashIn = () => {
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,7 @@ const CashIn = () => {
     try {
       const { data } = await axiosSecure.post(`/cash-in`, cashInInfo);
 
-      setMessage(`✅ ${data.message}`);
+      toast.success(`${data.message}`);
       e.target.reset();
     } catch (error) {
       setMessage(

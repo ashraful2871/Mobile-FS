@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { TbCurrencyTaka } from "react-icons/tb";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import useRole from "../hooks/useRole";
 
 const BalanceDisplay = ({ balance }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [role] = useRole();
 
   // Determine balance text based on role
   let balanceText = "";
-  if (balance.role === "admin") {
+  if (role === "admin") {
     balanceText = `${balance.balance} BDT (Income) | Total: ${balance.balance} BDT`;
   } else {
     balanceText = `${balance.balance} BDT`;
