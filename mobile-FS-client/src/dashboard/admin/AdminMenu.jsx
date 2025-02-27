@@ -12,9 +12,6 @@ const AdminMenu = () => {
         <li>
           <NavLink to="/dashboard/request-approval">Approval Request</NavLink>
         </li>
-        <li>
-          <NavLink to="/dashboard/all-materials">View all materials</NavLink>
-        </li>
       </ul>
     </div>
   );

@@ -22,6 +22,7 @@ import AdminRoute from "./dashboard/admin/AdminRoute";
 import AgentRoute from "./dashboard/agent/AgentRoute";
 import UserRoute from "./dashboard/user/UserRoute";
 import AgentApproval from "./dashboard/admin/AgentApproval";
+import Soon from "./pages/Soon";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: "/sign-up",
         element: <SignUp></SignUp>,
+      },
+      {
+        path: "/soon",
+        element: <Soon></Soon>,
       },
 
       //user menu

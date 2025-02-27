@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import axios from "axios";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const CashIn = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
 
   const handleCashIn = async (e) => {
     e.preventDefault();
@@ -25,6 +27,7 @@ const CashIn = () => {
 
       toast.success(`${data.message}`);
       e.target.reset();
+      navigate("/");
     } catch (error) {
       setMessage(
         `❌ ${error.response?.data?.message || "Something went wrong"}`

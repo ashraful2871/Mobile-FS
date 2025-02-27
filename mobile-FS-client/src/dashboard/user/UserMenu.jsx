@@ -9,17 +9,6 @@ const UserMenu = () => {
         <li>
           <NavLink to="/dashboard/user-transaction">Transaction</NavLink>
         </li>
-        <li>
-          <NavLink to="/dashboard/create-note">Create note</NavLink>
-        </li>
-        <li>
-          <NavLink to="/dashboard/personal-note">Manage personal notes</NavLink>
-        </li>
-        <li>
-          <NavLink to="/dashboard/all-study-materials">
-            View all study materials
-          </NavLink>
-        </li>
       </ul>
     </div>
   );

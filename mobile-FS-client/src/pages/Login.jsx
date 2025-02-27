@@ -8,7 +8,6 @@ import loginAni from "../../public/login.json";
 const Login = () => {
   const { signInUser, checkAuthStatus } = useAuth();
   const [loading, setLoading] = useState(false);
-  const location = useLocation();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -22,7 +21,7 @@ const Login = () => {
       const result = await signInUser(mobileNumber, pin);
       // console.log(result);
       toast.success("Login successful!");
-      navigate(location?.state ? location.state : "/");
+      navigate("/");
       checkAuthStatus();
       setLoading(false);
     } catch (error) {

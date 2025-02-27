@@ -3,13 +3,14 @@ import axios from "axios";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import toast from "react-hot-toast";
 import ButtonLoading from "../components/ButtonLoading";
+import { useNavigate } from "react-router-dom";
 
 const SendMoney = () => {
   const [loading, setLoading] = useState(false);
   const [recipientPhone, setRecipientPhone] = useState("");
   const [amount, setAmount] = useState("");
   const axiosSecure = useAxiosSecure();
-
+  const navigate = useNavigate();
   const handleSendMoney = async (e) => {
     e.preventDefault();
     try {
@@ -23,6 +24,7 @@ const SendMoney = () => {
       setRecipientPhone("");
       setAmount("");
       setLoading(false);
+      navigate("/");
     } catch (error) {
       toast.error(error.response?.data?.message);
       // console.log(error.response?.data?.message);

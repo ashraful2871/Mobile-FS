@@ -84,17 +84,10 @@ const Navbar = () => {
     <div className="navbar bg-base-100">
       <div className="flex-1">
         <Link to="/" className=" text-3xl font-extrabold">
-          Akash-MFS
+          MFS
         </Link>
       </div>
       <div className="flex-none gap-2">
-        {/* show balance here */}
-        {/* <div className="flex items-center gap-[2px] text-2xl font-semibold">
-          <span>
-            <TbCurrencyTaka />
-          </span>
-          <span>{balance.balance} BDT</span>
-        </div> */}
         {user && isLoading ? (
           <button className="btn btn-square">
             <span className="loading loading-spinner"></span>
@@ -112,7 +105,7 @@ const Navbar = () => {
             <div className="w-10 rounded-full">
               <img
                 alt="Tailwind CSS Navbar component"
-                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                src="https://i.ibb.co.com/WJBymqb/avater.webp"
               />
             </div>
           </div>

@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
 import useAxiosSecure from "../hooks/useAxiosSecure";
+import { useNavigate } from "react-router-dom";
 
 const CashOut = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const axiosSecure = useAxiosSecure();
-
+  const navigate = useNavigate();
   const handleCashOut = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -24,6 +25,7 @@ const CashOut = () => {
 
       setMessage(`✅ ${data.message}`);
       e.target.reset();
+      navigate("/");
     } catch (error) {
       setMessage(
         `❌ ${error.response?.data?.message || "Something went wrong"}`

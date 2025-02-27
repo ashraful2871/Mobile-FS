@@ -6,9 +6,11 @@ import AdminMenu from "../dashboard/admin/AdminMenu";
 import AgentMenu from "../dashboard/agent/AgentMenu";
 import UserMenu from "../dashboard/user/UserMenu";
 import useRole from "../hooks/useRole";
+import useAuth from "../hooks/useAuth";
 
 const DashBoard = () => {
   const [role, isLoading] = useRole();
+  const { logOut } = useAuth();
   return (
     <div className="lg:flex lg:h-screen overflow-hidden">
       {/* Sidebar */}
@@ -18,7 +20,7 @@ const DashBoard = () => {
         <div className="hidden lg:block lg:h-full overflow-y-auto">
           <div className="mb-6 text-center p-4">
             <Link to="/" className="text-xl font-bold text-green-700">
-              Akash MFS
+              MFS
             </Link>
           </div>
 
@@ -61,7 +63,7 @@ const DashBoard = () => {
               <ul className="menu">
                 <li>
                   <button
-                    //onClick={signOutUser}
+                    onClick={logOut}
                     className="flex items-center p-2 text-base font-bold text-white"
                   >
                     Logout
@@ -77,7 +79,7 @@ const DashBoard = () => {
           <ul className="menu">
             <li>
               <button
-                // onClick={signOutUser}
+                onClick={logOut}
                 className="flex items-center p-2 text-base font-bold"
               >
                 Logout

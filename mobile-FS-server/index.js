@@ -378,8 +378,16 @@ async function run() {
 
       // Find the user by phone number
       const user = await userCollection.findOne({ mobileNumber: userPhone });
+
       if (!user) {
         return res.status(400).json({ message: "User not found" });
+      }
+
+      // Ensure the cash-in is only for user accounts
+      if (user.role !== "user") {
+        return res
+          .status(400)
+          .json({ message: "Cash-in is only allowed for user accounts." });
       }
 
       // Find the agent by userId
