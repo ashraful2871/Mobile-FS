@@ -1,4 +1,4 @@
-Here is a well-structured **README.md** file for your Mobile Financial Service (MFS) application.
+Since both the **frontend** and **backend** are in a **single repository**, I'll adjust the **README.md** accordingly to reflect the correct project structure.
 
 ---
 
@@ -12,12 +12,14 @@ This is a **secure and user-friendly Mobile Financial Service (MFS) application*
 
 - [Features](#features)
 - [Technology Stack](#technology-stack)
+- [Project Structure](#project-structure)
 - [Installation](#installation)
 - [Usage](#usage)
 - [API Endpoints](#api-endpoints)
 - [Authentication & Security](#authentication--security)
 - [Transactions & Fees](#transactions--fees)
 - [User Roles & Permissions](#user-roles--permissions)
+- [Admin Credentials](#admin-credentials)
 - [Contributors](#contributors)
 - [License](#license)
 
@@ -25,32 +27,32 @@ This is a **secure and user-friendly Mobile Financial Service (MFS) application*
 
 ### **User Features**
 
-- Register with **Name, Mobile Number, Email, PIN (5-digit), and NID**
-- Receive a **40 Taka bonus** upon registration
-- **Send Money** to other users (Fee: **5 Taka for transactions over 100 Taka**)
-- **Cash-In** from an agent (**0 Fee**)
-- **Cash-Out** to an agent (Fee: **1.5%**)
-- **Balance Inquiry** (Initially hidden, click to reveal)
-- **Transaction History** (Last 100 transactions)
+✅ Register with **Name, Mobile Number, Email, PIN (5-digit), and NID**  
+✅ Receive a **40 Taka bonus** upon registration  
+✅ **Send Money** to other users (Fee: **5 Taka for transactions over 100 Taka**)  
+✅ **Cash-In** from an agent (**0 Fee**)  
+✅ **Cash-Out** to an agent (Fee: **1.5%**)  
+✅ **Balance Inquiry** (Initially hidden, click to reveal)  
+✅ **Transaction History** (Last 100 transactions)
 
 ### **Agent Features**
 
-- Register with **Name, Mobile Number, Email, PIN (5-digit), and NID**
-- Requires **Admin Approval** before activation
-- Receive **100,000 Taka** in their account upon approval
-- Can request a **Balance Recharge** from the admin
-- Earn **1%** on each user **cash-out transaction**
-- **Transaction History** (Last 100 transactions)
+✅ Register with **Name, Mobile Number, Email, PIN (5-digit), and NID**  
+✅ Requires **Admin Approval** before activation  
+✅ Receive **100,000 Taka** in their account upon approval  
+✅ Can request a **Balance Recharge** from the admin  
+✅ Earn **1%** on each user **cash-out transaction**  
+✅ **Transaction History** (Last 100 transactions)
 
 ### **Admin Features**
 
-- Manage **Users & Agents** (Approve/Block)
-- Approve **Agent Requests**
-- **Recharge Agent Balances**
-- Earn **0.5% from cash-out transactions**
-- Earn **5 Taka per transaction**
-- **Monitor Total Money** in the system
-- **View all Transactions**
+✅ Manage **Users & Agents** (Approve/Block)  
+✅ Approve **Agent Requests**  
+✅ **Recharge Agent Balances**  
+✅ Earn **0.5% from cash-out transactions**  
+✅ Earn **5 Taka per transaction**  
+✅ **Monitor Total Money** in the system  
+✅ **View all Transactions**
 
 ## **Technology Stack**
 
@@ -74,34 +76,64 @@ This is a **secure and user-friendly Mobile Financial Service (MFS) application*
 - **Bcrypt.js** (for PIN Hashing)
 - **Cookie Parser & CORS**
 
-## **Installation**
-
-### **Backend Setup**
+## **Project Structure**
 
 ```sh
-git clone https://github.com/your-repo/mobile-fs-server.git
-cd mobile-fs-server
+mobile-fs-app/
+│── backend/       # Node.js + Express + MongoDB (Mongoose)
+│   ├── models/    # Mongoose Models
+│   ├── routes/    # API Routes
+│   ├── controllers/ # Business Logic
+│   ├── middlewares/ # JWT & Auth Middleware
+│   ├── config/    # Environment & DB Configuration
+│   ├── index.js   # Entry Point for Backend
+│
+│── frontend/      # React + Vite
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/ # API Calls
+│   │   ├── App.js
+│   │   ├── main.jsx
+│
+│── .env.example   # Environment Variables
+│── package.json   # Dependencies & Scripts
+│── README.md      # Project Documentation
+```
+
+## **Installation**
+
+### **1️⃣ Clone the Repository**
+
+```sh
+git clone https://github.com/your-repo/mobile-fs-app.git
+cd mobile-fs-app
+```
+
+### **2️⃣ Setup Backend**
+
+```sh
+cd backend
 npm install
 cp .env.example .env  # Configure environment variables
 npm start
 ```
 
-### **Frontend Setup**
+### **3️⃣ Setup Frontend**
 
 ```sh
-git clone https://github.com/your-repo/mobile-fs-client.git
-cd mobile-fs-client
+cd ../frontend
 npm install
 npm run dev
 ```
 
 ## **Usage**
 
-1. **Register** as a **User** or **Agent**
-2. **Admin Approves** Agents
-3. **Users Send Money, Cash-In, and Cash-Out**
-4. **Agents Handle Cash-In Transactions**
-5. **Admin Manages Users, Agents & Transactions**
+1️⃣ **Register** as a **User** or **Agent**  
+2️⃣ **Admin Approves** Agents  
+3️⃣ **Users Send Money, Cash-In, and Cash-Out**  
+4️⃣ **Agents Handle Cash-In Transactions**  
+5️⃣ **Admin Manages Users, Agents & Transactions**
 
 ## **API Endpoints**
 
@@ -132,9 +164,9 @@ npm run dev
 
 ## **Authentication & Security**
 
-- **JWT-based Authentication** (Secure & Tokenized Access)
-- **Bcrypt.js for PIN Hashing**
-- **One Device Login Policy** (Users/Agents can log in from only one device at a time)
+✅ **JWT-based Authentication** (Secure & Tokenized Access)  
+✅ **Bcrypt.js for PIN Hashing**  
+✅ **One Device Login Policy** (Users/Agents can log in from only one device at a time)
 
 ## **Transactions & Fees**
 
@@ -169,4 +201,4 @@ This project is licensed under the **MIT License**.
 
 ---
 
-This README provides a **clear, structured, and professional** overview of the **Mobile Financial Service (MFS) application**. Let me know if you'd like to modify anything! 🚀
+This README now properly reflects the **combined frontend & backend repository** structure and provides a **clear installation guide, API reference, and project overview**. Let me know if you need any modifications! 🚀
