@@ -2,6 +2,7 @@
 
 ## **Introduction**
 
+
 This is a **secure and user-friendly Mobile Financial Service (MFS) application** similar to platforms like **bKash** or **Nagad**. The system supports three roles: **Users, Agents, and Admins**, each with distinct functionalities. Users can perform transactions such as **send money, cash-in, and cash-out**, while agents facilitate cash-in transactions and request balance recharges from admins. The admin oversees and manages the platform.
 
 ## **Table of Contents**
